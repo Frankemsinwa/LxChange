@@ -60,7 +60,7 @@ export const Footer: React.FC = () => {
         {/* Sub-footer Copyright & Legal */}
         <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-medium">
           <div>
-            © 2024 LxChange.
+            © 2026 LxChange.
           </div>
 
           <div className="flex items-center gap-6">
@@ -73,4 +73,3 @@ export const Footer: React.FC = () => {
     </footer>
   );
 };
-
