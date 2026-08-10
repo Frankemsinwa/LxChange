@@ -1,0 +1,6 @@
+{
+  "name": "LXchange - Crypto Exchange & Rates",
+  "description": "A naira-first crypto exchange and digital products store serving West Africa with live rate locking and instant payouts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
