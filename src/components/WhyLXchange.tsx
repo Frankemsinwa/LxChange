@@ -1,90 +1,79 @@
 import React from 'react';
-import { ShieldCheck, Zap, Eye, Building2, BellRing, Headphones } from 'lucide-react';
+import { ShieldCheck, Zap, Eye, Building2, Lock, Headphones } from 'lucide-react';
 
 export const WhyLXchange: React.FC = () => {
   const features = [
     {
-      title: 'Bank-grade security',
+      title: 'Fast, precise execution',
       description:
-        'Cold storage, mandatory 2FA, and round the clock monitoring protected at every step.',
-      icon: ShieldCheck,
-      color: 'from-blue-500/20 to-indigo-500/20 text-blue-400 border-blue-500/30',
+        'Zero slippage on trades. Our proprietary engine processes orders in under 0.1 seconds.',
+      icon: Zap,
     },
     {
-      title: 'Lightning Fast payouts',
+      title: 'Lightning-fast payouts',
       description:
         'Get naira deposited to your bank account in under 10 minutes, 24 hours a day, 7 days a week.',
-      icon: Zap,
-      color: 'from-amber-500/20 to-yellow-500/20 text-amber-400 border-amber-500/30',
+      icon: ShieldCheck,
     },
     {
-      title: '100% Transparent Rates',
+      title: '24/7 transparent pricing',
       description:
         'What you see is what you get. Transparent 1.5% fee locked upfront, zero hidden spreads, zero surprises.',
       icon: Eye,
-      color: 'from-emerald-500/20 to-teal-500/20 text-emerald-400 border-emerald-500/30',
     },
     {
-      title: 'Institutional Liquidity',
+      title: 'Institutional liquidity',
       description:
-        'Deep OTC desk with institutional liquidity for BTC, USDT, ETH, SOL, and more. Trade any volume smoothly with zero slippage.',
+        'Deep OTC desk with institutional liquidity for BTC, USDT, ETH, SOL, and more. Trade any volume smoothly.',
       icon: Building2,
-      color: 'from-sky-500/20 to-cyan-500/20 text-sky-400 border-sky-500/30',
     },
     {
-      title: 'Smart Rate Alerts',
+      title: 'Secure cold storage',
       description:
-        'Set custom price triggers for BTC or USDT. Guaranteed for 15 minutes market quotes the second the market hits your targets.',
-      icon: BellRing,
-      color: 'from-purple-500/20 to-fuchsia-500/20 text-purple-400 border-purple-500/30',
+        'Cold storage, mandatory 2FA, and round the clock monitoring. Protected at every step.',
+      icon: Lock,
     },
     {
-      title: '24 / 7 Local support',
+      title: '24/7 Premium support',
       description:
         'Connect directly with real Abuja based traders via live chat and WhatsApp, no bots, no queue delays.',
       icon: Headphones,
-      color: 'from-amber-500/20 to-orange-500/20 text-amber-300 border-amber-500/30',
     },
   ];
 
   return (
-    <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-purple-900/10 blur-[140px] pointer-events-none rounded-full" />
-
+    <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <div className="text-xs font-bold text-purple-400 tracking-wider uppercase mb-2 flex items-center justify-center gap-2">
-          <span className="w-2 h-0.5 bg-purple-500 inline-block" />
-          WHY LXCHANGE
-          <span className="w-2 h-0.5 bg-purple-500 inline-block" />
+      <div className="text-center max-w-3xl mx-auto mb-12">
+        <div className="text-[10px] font-bold text-purple-500 tracking-wider uppercase mb-3">
+          Why LXchange
         </div>
-        <h2 className="font-heading text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        <h2 className="font-heading text-3xl sm:text-4xl font-bold text-white tracking-tight">
           Built for West Africa.{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-400">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-orange-500">
             Built to last.
           </span>
         </h2>
       </div>
 
       {/* Feature Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {features.map((feature, idx) => {
           const Icon = feature.icon;
           return (
             <div
               key={idx}
-              className="glass-panel glass-panel-hover p-7 rounded-2xl border border-slate-800 relative group overflow-hidden"
+              className="bg-[#111222] p-6 sm:p-8 rounded-2xl border border-slate-800 transition-all duration-300"
             >
-              <div className="mb-5 inline-flex p-3 rounded-xl bg-gradient-to-br border shadow-md">
-                <Icon className={`w-6 h-6 ${feature.color.split(' ')[2]}`} />
+              <div className="mb-6 w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center">
+                <Icon className="w-5 h-5 text-purple-400" />
               </div>
 
-              <h3 className="font-heading text-xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors">
+              <h3 className="font-heading text-lg font-bold text-white mb-2">
                 {feature.title}
               </h3>
 
-              <p className="text-sm text-slate-300 leading-relaxed font-normal">
+              <p className="text-sm text-slate-400 leading-relaxed font-medium">
                 {feature.description}
               </p>
             </div>

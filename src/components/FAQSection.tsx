@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Minus, HelpCircle } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 import { FAQ_ITEMS } from '../data/cryptoData';
 
 export const FAQSection: React.FC = () => {
@@ -10,15 +10,13 @@ export const FAQSection: React.FC = () => {
   };
 
   return (
-    <section id="faq" className="py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="faq" className="py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="text-center mb-16">
-        <div className="text-xs font-bold text-purple-400 tracking-wider uppercase mb-2 flex items-center justify-center gap-2">
-          <span className="w-2 h-0.5 bg-purple-500 inline-block" />
+      <div className="text-center mb-12">
+        <div className="text-[10px] font-bold text-purple-500 tracking-wider uppercase mb-3">
           FAQ
-          <span className="w-2 h-0.5 bg-purple-500 inline-block" />
         </div>
-        <h2 className="font-heading text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        <h2 className="font-heading text-3xl sm:text-4xl font-bold text-white tracking-tight">
           Honest answers to real questions.
         </h2>
       </div>
@@ -30,10 +28,10 @@ export const FAQSection: React.FC = () => {
           return (
             <div
               key={idx}
-              className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+              className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
                 isOpen
-                  ? 'bg-slate-900/90 border-purple-500/40 shadow-lg'
-                  : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+                  ? 'bg-[#111222] border-slate-700 shadow-lg'
+                  : 'bg-[#111222] border-slate-800 hover:border-slate-700'
               }`}
             >
               <button
@@ -55,7 +53,7 @@ export const FAQSection: React.FC = () => {
               </button>
 
               {isOpen && (
-                <div className="px-6 pb-6 text-sm text-slate-300 leading-relaxed border-t border-slate-800/60 pt-4 font-normal">
+                <div className="px-6 pb-6 text-sm text-slate-400 leading-relaxed pt-2 font-medium">
                   {item.answer}
                 </div>
               )}
@@ -66,3 +64,4 @@ export const FAQSection: React.FC = () => {
     </section>
   );
 };
+

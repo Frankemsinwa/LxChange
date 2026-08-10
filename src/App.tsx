@@ -205,15 +205,13 @@ export default function App() {
       <div className="fixed bottom-6 right-6 z-40">
         <button
           onClick={() => setChatDeskOpen(true)}
-          className="px-4 py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-fuchsia-600 to-indigo-600 text-white font-bold text-xs shadow-xl shadow-purple-900/50 flex items-center gap-2.5 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-purple-400/30 group"
+          className="w-14 h-14 rounded-full text-white shadow-xl shadow-purple-900/50 flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer group relative"
+          style={{ background: 'linear-gradient(135deg, #6D4AFF 0%, #A855F7 100%)' }}
         >
-          <div className="relative">
-            <MessageSquare className="w-5 h-5 text-white" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-purple-900 animate-pulse" />
-          </div>
-          <span>LX Trade Desk</span>
+          <MessageSquare className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-[#080811] animate-pulse" />
           {activeTicket && (
-            <span className="px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 text-[10px] font-extrabold font-mono">
+            <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[9px] font-extrabold font-mono">
               1
             </span>
           )}

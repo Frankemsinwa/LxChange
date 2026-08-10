@@ -1,136 +1,107 @@
-import React, { useState } from 'react';
-import { CheckCircle2, ArrowRight, ShieldCheck, Zap, RefreshCw } from 'lucide-react';
-import { INITIAL_ORDERS } from '../data/cryptoData';
+import React from 'react';
+import { CheckCircle2 } from 'lucide-react';
 
 export const TradingExperience: React.FC<{ onStartTrading: () => void }> = ({ onStartTrading }) => {
-  const [orders, setOrders] = useState(INITIAL_ORDERS);
-
   return (
-    <section id="trade" className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <section id="trade" className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* Left Side Info */}
-        <div className="lg:col-span-6 space-y-6">
-          <div className="text-xs font-bold text-purple-400 tracking-wider uppercase flex items-center gap-2">
-            <span className="w-2 h-0.5 bg-purple-500 inline-block" />
-            TRADING EXPERIENCE
+        <div className="space-y-6">
+          <div className="text-[10px] font-bold text-purple-500 tracking-wider uppercase mb-3">
+            Trading Experience
           </div>
 
-          <h2 className="font-heading text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
-            Built for speed.{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-400">
-              Designed for total clarity.
-            </span>
+          <h2 className="font-heading text-3xl sm:text-5xl font-bold text-white tracking-tight leading-tight">
+            Built for speed.<br />
+            Designed for retail trading.
           </h2>
 
-          <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Execute trades instantly with live markets analytics and total transparent pricing. NO hidden spreads, NO delays.
+          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+            Execute trades instantly with live market analytics and total transparent pricing. NO hidden spreads, NO delays.
           </p>
 
           {/* Checklist */}
-          <div className="space-y-3 pt-2">
+          <div className="space-y-4 pt-4">
             {[
-              'Live BTC/NGN analytics & order book',
-              'Guaranteed 15 minutes rates locks',
-              'Sub-10 minutes payouts to any Nigerian bank',
+              '0.1% Trading fee locked upfront',
+              'Deep liquidity on all tokens',
+              'Sub 10-mins payouts to any Nigerian bank',
             ].map((item, idx) => (
               <div key={idx} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                </div>
-                <span className="text-sm font-semibold text-slate-200">{item}</span>
+                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                <span className="text-sm font-medium text-slate-300">{item}</span>
               </div>
             ))}
           </div>
 
           {/* Start Trading CTA */}
-          <div className="pt-4">
+          <div className="pt-6">
             <button
               onClick={onStartTrading}
-              className="px-7 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 shadow-lg shadow-purple-900/40 flex items-center gap-2 transition-all cursor-pointer active:scale-95"
+              className="px-8 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-500 to-orange-500 hover:opacity-90 transition-opacity"
             >
-              <span>Start trading now</span>
-              <ArrowRight className="w-4 h-4" />
+              Start trading now
             </button>
           </div>
         </div>
 
-        {/* Right Preview Panel (Matching Figma) */}
-        <div className="lg:col-span-6">
-          <div className="glass-panel p-6 rounded-2xl border border-purple-500/30 glow-purple relative overflow-hidden">
-            {/* Header of analytics box */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-              <div>
-                <div className="text-xs text-slate-400 font-semibold">BTC / NGN</div>
-                <div className="text-xl font-extrabold text-white font-mono flex items-center gap-2 mt-0.5">
-                  ₦168,420,000
-                  <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                    ▲ 2.41%
-                  </span>
-                </div>
+        {/* Right Preview Panel */}
+        <div className="bg-[#111222] p-8 rounded-3xl border border-slate-800 shadow-2xl">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-2xl font-bold text-white">$2,450</span>
+                <span className="text-xs font-semibold text-emerald-400">▲ 53.4%</span>
               </div>
-              <div className="text-right">
-                <div className="text-xs text-slate-500">USD Equivalent</div>
-                <div className="text-sm font-mono text-slate-300 font-bold">$104,250</div>
-              </div>
+              <div className="text-xs text-slate-500">Live analytics</div>
             </div>
-
-            {/* Visual Waveform SVG Graph */}
-            <div className="py-6">
-              <svg className="w-full h-24 overflow-visible" viewBox="0 0 400 90">
-                <defs>
-                  <linearGradient id="tradeGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#a855f7" stopOpacity="0.4" />
-                    <stop offset="100%" stopColor="#a855f7" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                <path
-                  d="M 0 70 Q 50 30, 100 50 T 200 20 T 300 45 T 400 15 L 400 90 L 0 90 Z"
-                  fill="url(#tradeGrad)"
-                />
-                <path
-                  d="M 0 70 Q 50 30, 100 50 T 200 20 T 300 45 T 400 15"
-                  fill="none"
-                  stroke="#a855f7"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-                <circle cx="400" cy="15" r="5" fill="#e879f9" className="animate-ping" />
-                <circle cx="400" cy="15" r="4" fill="#a855f7" />
-              </svg>
+            <div className="text-right">
+              <div className="text-xl font-bold text-white">164,272,050</div>
+              <div className="text-xs text-slate-500">Volume</div>
             </div>
+          </div>
 
-            {/* Live Order Stream List */}
-            <div className="space-y-2 pt-2">
-              <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-                Recent Completed Quotes
-              </div>
+          {/* Visual Graph Area */}
+          <div className="h-48 relative mb-6">
+            <svg className="w-full h-full overflow-visible" viewBox="0 0 400 150">
+              <defs>
+                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M 0 120 Q 50 100, 100 110 T 200 60 T 300 80 T 400 20 L 400 150 L 0 150 Z"
+                fill="url(#chartGrad)"
+              />
+              <path
+                d="M 0 120 Q 50 100, 100 110 T 200 60 T 300 80 T 400 20"
+                fill="none"
+                stroke="#8b5cf6"
+                strokeWidth="3"
+                strokeLinecap="round"
+              />
+              <circle cx="400" cy="20" r="4" fill="#a855f7" />
+            </svg>
+          </div>
 
-              {orders.map((ord) => (
-                <div
-                  key={ord.id}
-                  className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="font-mono font-bold text-purple-300">{ord.amount}</span>
-                    <span className="text-slate-500">→</span>
-                    <span className="font-mono text-white font-semibold">
-                      ₦{ord.ngnValue.toLocaleString()}
-                    </span>
-                  </div>
-
-                  <span
-                    className={`px-2 py-0.5 rounded font-semibold ${
-                      ord.status === 'Paid'
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : ord.status === 'Locked'
-                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                        : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                    }`}
-                  >
-                    {ord.status}
-                  </span>
-                </div>
-              ))}
+          {/* Grid Stats below graph */}
+          <div className="grid grid-cols-4 gap-4 border-t border-slate-800 pt-6">
+            <div>
+              <div className="text-[10px] text-slate-500 mb-1">Market</div>
+              <div className="text-sm font-semibold text-white">Bullish</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-slate-500 mb-1">Trend</div>
+              <div className="text-sm font-semibold text-emerald-400">+5.4%</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-slate-500 mb-1">Users</div>
+              <div className="text-sm font-semibold text-white">142K</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-slate-500 mb-1">Status</div>
+              <div className="text-sm font-semibold text-blue-400">Live</div>
             </div>
           </div>
         </div>
@@ -138,3 +109,4 @@ export const TradingExperience: React.FC<{ onStartTrading: () => void }> = ({ on
     </section>
   );
 };
+

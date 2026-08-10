@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sun, Moon, ArrowRight, Menu, X, Zap } from 'lucide-react';
-import { LXLogo } from './LXLogo';
+import lxLogo from '../assets/logo.png';
 
 interface NavbarProps {
   onOpenQuickTrade: (assetOrCategory?: string) => void;
@@ -43,9 +43,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => onOpenQuickTrade(pill.action)}
               className={`px-3 py-1 rounded-full transition-all duration-200 border flex items-center gap-1.5 ${
                 pill.isHot
-                  ? 'bg-gradient-to-r from-purple-900/40 to-fuchsia-900/40 text-purple-200 border-purple-500/30 hover:border-purple-400 hover:bg-purple-800/40'
+                  ? 'text-white border-transparent hover:opacity-90'
                   : 'bg-slate-900/80 text-slate-300 border-slate-800 hover:border-slate-600 hover:text-white'
               }`}
+              style={pill.isHot ? { background: 'linear-gradient(115.45deg, #D8582B 15.7%, #9E3B87 50%, #7023BB 84.3%)' } : undefined}
             >
               {pill.isHot && <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" />}
               {pill.label}
@@ -59,7 +60,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <a href="#" className="flex items-center group transition-transform hover:scale-[1.02]">
-            <LXLogo size="md" showTagline={true} />
+            <img src={lxLogo} alt="LXchange" className="h-14 w-auto" />
           </a>
 
           {/* Desktop Nav Links */}
@@ -93,7 +94,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Get Started CTA */}
             <button
               onClick={() => onOpenGetStarted()}
-              className="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-600 via-fuchsia-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 shadow-md shadow-purple-900/30 flex items-center gap-1.5 group transition-all active:scale-95 cursor-pointer"
+              className="px-4 py-2 rounded-xl text-sm font-semibold text-white hover:opacity-90 shadow-md shadow-purple-900/30 flex items-center gap-1.5 group transition-all active:scale-95 cursor-pointer"
+              style={{ background: 'linear-gradient(115.45deg, #D8582B 15.7%, #9E3B87 50%, #7023BB 84.3%)' }}
             >
               Get Started
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -145,7 +147,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 setMobileMenuOpen(false);
                 onOpenGetStarted();
               }}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-center font-medium text-white flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2.5 rounded-xl text-center font-medium text-white flex items-center justify-center gap-2 cursor-pointer"
+              style={{ background: 'linear-gradient(115.45deg, #D8582B 15.7%, #9E3B87 50%, #7023BB 84.3%)' }}
             >
               Get Started
               <ArrowRight className="w-4 h-4" />
