@@ -9,6 +9,7 @@ import { Ecosystem } from './components/Ecosystem';
 import { HowItWorks } from './components/HowItWorks';
 import { TradingExperience } from './components/TradingExperience';
 import { EarnSection } from './components/EarnSection';
+import { CryptoTicker } from './components/CryptoTicker';
 import { FAQSection } from './components/FAQSection';
 import { NewsletterCTA } from './components/NewsletterCTA';
 import { Footer } from './components/Footer';
@@ -190,6 +191,9 @@ export default function App() {
 
         {/* Earn & Staking Section */}
         <EarnSection options={YIELD_OPTIONS} onEarnClick={handleEarnClick} />
+
+        {/* Crypto Price Ticker */}
+        <CryptoTicker assets={assets} />
 
         {/* FAQ Section */}
         <FAQSection />

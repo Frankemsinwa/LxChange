@@ -18,7 +18,6 @@ export const LiveMarkets: React.FC<LiveMarketsProps> = ({ assets, onTradeAsset }
 
     if (!matchesSearch) return false;
     if (filterTab === 'gainers') return asset.change24h > 0;
-    // favorites not implemented in data yet, just show all for now
     return true;
   });
 
@@ -180,5 +179,3 @@ export const LiveMarkets: React.FC<LiveMarketsProps> = ({ assets, onTradeAsset }
     </section>
   );
 };
-
-
