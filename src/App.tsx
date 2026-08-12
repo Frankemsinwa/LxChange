@@ -19,7 +19,7 @@ import { AuthModal } from './components/AuthModal';
 import { GetStartedModal } from './components/GetStartedModal';
 import { TradeDeskChatModal } from './components/TradeDeskChatModal';
 
-import { INITIAL_CRYPTO_ASSETS, ECOSYSTEM_PRODUCTS, YIELD_OPTIONS } from './data/cryptoData';
+import { INITIAL_CRYPTO_ASSETS, ECOSYSTEM_PRODUCTS, YIELD_OPTIONS, PLATFORM_ADS } from './data/cryptoData';
 import { CryptoAsset, ProductService, YieldOption } from './types/crypto';
 
 interface ActiveTicket {
@@ -171,6 +171,9 @@ export default function App() {
         {/* Global Market Stats Bar */}
         <GlobalStats />
 
+        {/* Featured Platform Ads Spotlight */}
+        <CryptoTicker ads={PLATFORM_ADS} />
+
         {/* Live Markets Section */}
         <LiveMarkets assets={assets} onTradeAsset={handleTradeAsset} />
 
@@ -191,9 +194,6 @@ export default function App() {
 
         {/* Earn & Staking Section */}
         <EarnSection options={YIELD_OPTIONS} onEarnClick={handleEarnClick} />
-
-        {/* Crypto Price Ticker */}
-        <CryptoTicker assets={assets} />
 
         {/* FAQ Section */}
         <FAQSection />

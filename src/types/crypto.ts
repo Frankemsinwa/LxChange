@@ -22,6 +22,19 @@ export interface ProductService {
   icon: string;
 }
 
+export type AdAccent = 'purple' | 'emerald' | 'amber' | 'cyan';
+
+export interface PlatformAd {
+  id: string;
+  tag: string;
+  headline: string;
+  subtext: string;
+  icon: string;
+  accent: AdAccent;
+  cta: string;
+  stats: { label: string; value: string }[];
+}
+
 export interface YieldOption {
   id: string;
   title: string;

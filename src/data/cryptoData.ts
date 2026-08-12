@@ -1,4 +1,4 @@
-import { CryptoAsset, ProductService, YieldOption, FAQItem, OrderItem } from '../types/crypto';
+import { CryptoAsset, ProductService, YieldOption, FAQItem, OrderItem, PlatformAd } from '../types/crypto';
 
 export const INITIAL_CRYPTO_ASSETS: CryptoAsset[] = [
   {
@@ -249,6 +249,51 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     question: 'Are you a licensed business?',
     answer: 'LXchange Digital Ltd is registered in Nigeria (Abuja office) operating in full compliance with relevant local financial and AML guidelines. All client funds are safeguarded using multi-signature cold storage vaults.',
+  },
+];
+
+export const PLATFORM_ADS: PlatformAd[] = [
+  {
+    id: 'usdt-rate',
+    tag: 'SPECIAL RATE',
+    headline: 'Buy USDT at our best rate yet.',
+    subtext:
+      'Trade USDT / NGN at a locked 1,575 rate with zero network fees all week.',
+    icon: 'BadgePercent',
+    accent: 'purple',
+    cta: 'Start trading',
+    stats: [
+      { label: 'Rate / NGN', value: '1,575' },
+      { label: 'Network fee', value: '0.00' },
+    ],
+  },
+  {
+    id: 'btc-zero-fee',
+    tag: 'LIMITED',
+    headline: 'Sell Bitcoin, zero fees this weekend.',
+    subtext:
+      'No seller fee on BTC / NGN until Monday 8 AM WAT. Payouts in under 7 minutes.',
+    icon: 'Rocket',
+    accent: 'amber',
+    cta: 'Sell BTC now',
+    stats: [
+      { label: 'BTC / NGN', value: '168.42M' },
+      { label: 'Savings', value: '1.5% fee' },
+    ],
+  },
+  {
+    id: 'referral-double',
+    tag: 'NEW',
+    headline: 'Referrals now pay double.',
+    subtext:
+      'Give friends 2× the sign-up bonus and earn 2% on every trade they make for 90 days.',
+    icon: 'Gift',
+    accent: 'emerald',
+    cta: 'Get my link',
+    stats: [
+      { label: 'Per referral', value: '2%' },
+      { label: 'Bonus window', value: '90 days' },
+    ],
   },
 ];
 
