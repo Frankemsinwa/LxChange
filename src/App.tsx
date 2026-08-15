@@ -22,6 +22,8 @@ import { TradeDeskChatModal } from './components/TradeDeskChatModal';
 import { INITIAL_CRYPTO_ASSETS, ECOSYSTEM_PRODUCTS, YIELD_OPTIONS, PLATFORM_ADS } from './data/cryptoData';
 import { CryptoAsset, ProductService, YieldOption } from './types/crypto';
 
+import { AdminDashboard } from './components/AdminDashboard';
+
 interface ActiveTicket {
   ticketId: string;
   tradeSummary: string;
@@ -32,6 +34,22 @@ interface ActiveTicket {
 export default function App() {
   const [assets, setAssets] = useState<CryptoAsset[]>(INITIAL_CRYPTO_ASSETS);
   const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Simple client routing state for /admin
+  const [currentPath, setCurrentPath] = useState<string>(() => window.location.pathname);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigateTo = (path: string) => {
+    window.history.pushState({}, '', path);
+    setCurrentPath(path);
+  };
 
   // Trade Modal State
   const [tradeModalOpen, setTradeModalOpen] = useState(false);
@@ -137,6 +155,10 @@ export default function App() {
     }
     setChatDeskOpen(true);
   };
+
+  if (currentPath.startsWith('/admin')) {
+    return <AdminDashboard onBackToSite={() => navigateTo('/')} />;
+  }
 
   return (
     <div

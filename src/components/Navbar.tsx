@@ -70,6 +70,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <a href="#earn" className="hover:text-purple-400 transition-colors">Earn</a>
             <a href="#staking" className="hover:text-purple-400 transition-colors">Staking</a>
             <a href="#faq" className="hover:text-purple-400 transition-colors">Learn</a>
+            <a href="/admin" className="hover:text-purple-400 transition-colors px-2 py-0.5 rounded bg-purple-950/60 border border-purple-800/50 text-purple-300 font-semibold text-xs">Admin Desk</a>
           </nav>
 
           {/* Right Action Controls */}
