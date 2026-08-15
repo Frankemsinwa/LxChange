@@ -503,11 +503,7 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
       <header className="h-16 border-b border-slate-800/80 bg-[#090b17] px-6 flex items-center justify-between z-20 sticky top-0">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
-            <div className="flex items-center text-xl font-bold tracking-tight">
-              <span className="text-white">L</span>
-              <span className="text-purple-500 ml-1">X</span>
-              <span className="text-white ml-1">change</span>
-            </div>
+            <img src={lxLogo} alt="LXchange" className="h-8 w-auto" />
             <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase font-mono border-l border-slate-800 pl-3">
               TRADE DESK
             </span>
