@@ -32,6 +32,7 @@ import {
   Eye,
   Menu
 } from 'lucide-react';
+import lxLogo from '../assets/logo.png';
 
 // Data Interfaces
 interface TradeRequest {
@@ -397,10 +398,8 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
           </button>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="flex items-center text-lg sm:text-xl font-bold tracking-tight">
-              <span className="text-white">L</span>
-              <span className="text-purple-500 ml-1">X</span>
-              <span className="text-white ml-1">change</span>
+            <div className="flex items-center">
+              <img src={lxLogo} alt="LXchange" className="h-10 sm:h-12 w-auto" />
             </div>
             <span className="text-[10px] sm:text-[11px] font-semibold tracking-wider text-slate-400 uppercase font-mono border-l border-slate-800 pl-2 sm:pl-3">
               TRADE DESK
@@ -988,7 +987,7 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
 
           {/* TAB 4: AFFILIATES & HOMEPAGE BANNER ADS */}
           {activeTab === 'affiliates' && (
-            <div className="space-y-8 sm:space-y-10 animate-fadeIn font-sans">
+            <div className="space-y-8 sm:space-y-10 animate-fadeIn font-sans font-sans">
               {/* SECTION A: HOMEPAGE BANNER ADS SPOTLIGHT MANAGER */}
               <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -1092,7 +1091,7 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
               <div className="space-y-6 pt-6 border-t border-slate-800/80">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight font-sans">Affiliate Partner Placements</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight font-sans font-sans">Affiliate Partner Placements</h2>
                     <p className="text-xs sm:text-sm text-slate-400 mt-1">
                       Manage third-party hardware wallet & security partner links embedded across LXchange.
                     </p>
