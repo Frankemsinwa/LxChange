@@ -30,21 +30,67 @@ import {
   BadgePercent,
   Sparkles,
   Eye,
-  Menu
+  Menu,
+  Copy,
+  Check,
+  Send,
+  Building2,
+  CreditCard,
+  QrCode,
+  ShieldCheck,
+  Image as ImageIcon,
+  UserCheck
 } from 'lucide-react';
 import lxLogo from '../assets/logo.png';
 
-// Data Interfaces
+// Chat Message Interface
+interface ChatMsg {
+  id: string;
+  sender: 'customer' | 'admin' | 'bot';
+  text: string;
+  timestamp: string;
+}
+
+// Trade Request Interface with Full Settlement & Chat Details
 interface TradeRequest {
   id: string;
   customerName: string;
   customerPhone: string;
+  customerEmail: string;
   type: 'crypto' | 'giftcard';
   assetName: string;
   actionDetails: string;
   estValue: string;
   status: 'New' | 'Quoted' | 'Settled' | 'Completed';
   receivedTime: string;
+  
+  // Payout Bank Details for Customer
+  payoutBank: {
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+  };
+
+  // Gift Card Specific Settlement Details
+  cardDetails?: {
+    code: string;
+    condition: string;
+    country: string;
+    valueUsd: string;
+    cardImageUrl: string;
+    receiptImageUrl?: string;
+  };
+
+  // Crypto Specific Settlement Details
+  cryptoDetails?: {
+    network: string;
+    receivingWallet: string;
+    txHash?: string;
+    customerReturnWallet?: string;
+  };
+
+  // Live Chat Conversation History
+  chatHistory: ChatMsg[];
 }
 
 interface VTUOrder {
@@ -109,71 +155,157 @@ export interface HomepageAd {
 
 export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBackToSite }) => {
   const [activeTab, setActiveTab] = useState<'trade-requests' | 'vtu-orders' | 'rates' | 'affiliates'>('trade-requests');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // ---------------- STATE 1: TRADE REQUESTS (Customer Stream) ----------------
+  // ---------------- STATE 1: TRADE REQUESTS (Full Settlement & Live Chat) ----------------
   const [tradeRequests, setTradeRequests] = useState<TradeRequest[]>([
     {
       id: 'TR-108',
-      customerName: 'Chidi O.',
-      customerPhone: '+234 803 445 1142',
-      type: 'crypto',
-      assetName: 'USDT',
-      actionDetails: 'Sell 500 USDT',
-      estValue: '₦732,500',
-      status: 'New',
-      receivedTime: '2 min ago',
-    },
-    {
-      id: 'TR-107',
       customerName: 'Amaka E.',
       customerPhone: '+234 812 990 8830',
+      customerEmail: 'amaka.e@gmail.com',
       type: 'giftcard',
       assetName: 'iTunes $200',
       actionDetails: 'Sell iTunes Physical Card ($200)',
       estValue: '₦256,000',
       status: 'New',
-      receivedTime: '11 min ago',
+      receivedTime: '5 min ago',
+      payoutBank: {
+        bankName: 'UBA (United Bank for Africa)',
+        accountNumber: '2049102940',
+        accountName: 'Amaka Elizabeth Okonkwo',
+      },
+      cardDetails: {
+        code: 'X79A-4019-994B-2018',
+        condition: 'USA Physical Card with Cash Receipt',
+        country: 'United States (USD)',
+        valueUsd: '$200.00',
+        cardImageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=800&auto=format&fit=crop',
+        receiptImageUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop',
+      },
+      chatHistory: [
+        { id: '1', sender: 'customer', text: 'Hi! I uploaded my $200 iTunes physical card with cash receipt. Please quote payout.', timestamp: '15:40' },
+        { id: '2', sender: 'bot', text: 'Trade Desk Automated Bot: Request received. Current rate locked at ₦1,280/$ (Total ₦256,000). A trader will verify your card photo shortly.', timestamp: '15:40' },
+      ],
+    },
+    {
+      id: 'TR-107',
+      customerName: 'Chidi O.',
+      customerPhone: '+234 803 445 1142',
+      customerEmail: 'chidi.crypto@gmail.com',
+      type: 'crypto',
+      assetName: 'USDT',
+      actionDetails: 'Sell 500 USDT (TRC20)',
+      estValue: '₦732,500',
+      status: 'New',
+      receivedTime: '12 min ago',
+      payoutBank: {
+        bankName: 'Kuda Microfinance Bank',
+        accountNumber: '2019482019',
+        accountName: 'Chidi Okeke',
+      },
+      cryptoDetails: {
+        network: 'TRC20 (Tron Network)',
+        receivingWallet: 'TYu8aX9p7Rk2QmNWv4s8bLk39vP1xZq8Lm',
+        txHash: '0x7e2a91b4028f81a704c3d2e1f9a8b7c6d5e4f3a2b1c0987654321',
+        customerReturnWallet: 'TX9aK2m1p0Lq98v77XyZ1',
+      },
+      chatHistory: [
+        { id: '1', sender: 'customer', text: 'I sent 500 USDT to your TRC20 wallet. Here is the TxHash: 0x7e2a91b4...', timestamp: '15:32' },
+        { id: '2', sender: 'bot', text: 'Trade Desk Bot: 500 USDT deposit detected on TRC20 network. Locked rate ₦1,465/$ (Total ₦732,500).', timestamp: '15:32' },
+      ],
     },
     {
       id: 'TR-106',
       customerName: 'Yusuf B.',
       customerPhone: '+234 705 112 2214',
+      customerEmail: 'yusuf.baba@yahoo.com',
       type: 'crypto',
       assetName: 'BTC',
       actionDetails: 'Sell 0.05 BTC',
       estValue: '₦8,045,000',
-      status: 'New',
-      receivedTime: '26 min ago',
+      status: 'Quoted',
+      receivedTime: '30 min ago',
+      payoutBank: {
+        bankName: 'GTBank (Guaranty Trust Bank)',
+        accountNumber: '0129402910',
+        accountName: 'Yusuf Babangida',
+      },
+      cryptoDetails: {
+        network: 'Native Bitcoin Network',
+        receivingWallet: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+        txHash: '0x3a9f81b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9',
+      },
+      chatHistory: [
+        { id: '1', sender: 'customer', text: 'Transferred 0.05 BTC. How soon will bank payout drop?', timestamp: '15:10' },
+        { id: '2', sender: 'admin', text: 'Hi Yusuf, 1 block confirmation received. Payout of ₦8,045,000 dispatched to GTBank 0129402910.', timestamp: '15:15' },
+      ],
     },
     {
       id: 'TR-105',
       customerName: 'Tunde A.',
       customerPhone: '+234 902 334 5561',
+      customerEmail: 'tunde.a@hotmail.com',
       type: 'giftcard',
       assetName: 'Steam $100',
       actionDetails: 'Sell Steam E-Code ($100)',
       estValue: '₦119,000',
-      status: 'Quoted',
-      receivedTime: '48 min ago',
-    },
-    {
-      id: 'TR-104',
-      customerName: 'Blessing N.',
-      customerPhone: '+234 816 778 0097',
-      type: 'crypto',
-      assetName: 'USDT',
-      actionDetails: 'Sell 1,200 USDT',
-      estValue: '₦1,758,000',
       status: 'Settled',
       receivedTime: '1 hr ago',
+      payoutBank: {
+        bankName: 'Zenith Bank',
+        accountNumber: '1019482011',
+        accountName: 'Tunde Adeleke',
+      },
+      cardDetails: {
+        code: 'STM-9921-4019-8812',
+        condition: 'Global Digital E-Code',
+        country: 'Global / Multi-Currency',
+        valueUsd: '$100.00',
+        cardImageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=800&auto=format&fit=crop',
+      },
+      chatHistory: [
+        { id: '1', sender: 'customer', text: 'Sent Steam code. Please confirm.', timestamp: '14:40' },
+        { id: '2', sender: 'admin', text: 'Code verified and redeemed! ₦119,000 sent to Zenith Bank.', timestamp: '14:45' },
+      ],
     },
   ]);
 
   const [tradeFilterStatus, setTradeFilterStatus] = useState<string>('All');
-  const [selectedTrade, setSelectedTrade] = useState<TradeRequest | null>(null);
+  const [selectedTrade, setSelectedTrade] = useState<TradeRequest | null>(tradeRequests[0]);
+  const [adminChatInput, setAdminChatInput] = useState('');
+  const [cardImageLightbox, setCardImageLightbox] = useState<string | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  // ---------------- STATE 2: VTU ORDERS (Automated Stream) ----------------
+  // Copy helper
+  const handleCopy = (text: string, fieldId: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldId);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  // Send admin chat message
+  const handleSendAdminChat = (textToSend?: string) => {
+    const messageText = textToSend || adminChatInput;
+    if (!messageText.trim() || !selectedTrade) return;
+
+    const newMsg: ChatMsg = {
+      id: `admin-${Date.now()}`,
+      sender: 'admin',
+      text: messageText,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    const updatedHistory = [...selectedTrade.chatHistory, newMsg];
+
+    setTradeRequests((prev) =>
+      prev.map((t) => (t.id === selectedTrade.id ? { ...t, chatHistory: updatedHistory } : t))
+    );
+
+    setSelectedTrade((prev) => (prev ? { ...prev, chatHistory: updatedHistory } : null));
+    if (!textToSend) setAdminChatInput('');
+  };
+
+  // ---------------- STATE 2: VTU ORDERS ----------------
   const [vtuOrders, setVtuOrders] = useState<VTUOrder[]>([
     { orderId: '#1042', product: 'MTN Data 10GB', provider: 'VTpass', amount: '₦5,500', status: 'Delivered', customerInfo: '08034567890' },
     { orderId: '#1041', product: 'CODM · 800 CP', provider: 'Razer Gold', amount: '₦14,200', status: 'Delivered', customerInfo: 'User ID: 6849302' },
@@ -185,7 +317,7 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
 
   const [vtuFilterStatus, setVtuFilterStatus] = useState<string>('All');
 
-  // ---------------- STATE 3: ASSETS & RATES (Admin Master Control) ----------------
+  // ---------------- STATE 3: ASSETS & RATES ----------------
   const [tradeRates, setTradeRates] = useState<TradeRate[]>([
     { id: '1', asset: 'USDT', category: 'crypto', networkOrType: 'TRC20 / BEP20', buyAt: '1,465', sellAt: '1,510', marketRef: '1,487', margin: '1.5%', status: 'Active' },
     { id: '2', asset: 'BTC', category: 'crypto', networkOrType: 'Native Bitcoin', buyAt: '160,900,000', sellAt: '165,800,000', marketRef: '163,400,000', margin: '1.5%', status: 'Active' },
@@ -199,7 +331,7 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
   const [assetModalOpen, setAssetModalOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<TradeRate | null>(null);
 
-  // ---------------- STATE 4: VTU PRICING RULES ----------------
+  // ---------------- STATE 4: VTU PRICING ----------------
   const [vtuPricing, setVtuPricing] = useState<VTUPriceRow[]>([
     { id: '1', category: 'Airtime', model: 'Commission', providerCost: 'Face – 2.5%', marginValue: '1', marginType: 'percent', customerPays: '₦4,950', youEarn: '₦75', earnPercent: '1.5%' },
     { id: '2', category: 'Cable TV', model: 'Commission+fee', providerCost: 'Retail – 1.5%', marginValue: '100', marginType: 'fee', customerPays: '₦19,100', youEarn: '₦385', earnPercent: '' },
@@ -211,7 +343,7 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
   const [vtuPriceModalOpen, setVtuPriceModalOpen] = useState(false);
   const [editingVtuPrice, setEditingVtuPrice] = useState<VTUPriceRow | null>(null);
 
-  // ---------------- STATE 5: AFFILIATE LINKS & HOMEPAGE BANNER ADS SPOTLIGHT ----------------
+  // ---------------- STATE 5: AFFILIATE LINKS & HOMEPAGE ADS ----------------
   const [partnerLinks, setPartnerLinks] = useState<PartnerLink[]>([
     { id: '1', partner: 'Ledger · Hardware Wallet', placement: 'Secure Crypto Page', targetUrl: 'https://ledger.com?aff=lxchange', clicks: 418, estEarnings: '$63', status: 'Active' },
     { id: '2', partner: 'Trezor · Hardware Wallet', placement: 'Blog Posts', targetUrl: 'https://trezor.io?aff=lxchange', clicks: 156, estEarnings: '$21', status: 'Active' },
@@ -222,7 +354,6 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
   const [affiliateModalOpen, setAffiliateModalOpen] = useState(false);
   const [editingAffiliate, setEditingAffiliate] = useState<PartnerLink | null>(null);
 
-  // Homepage Banner Ads Spotlight State
   const [homepageAds, setHomepageAds] = useState<HomepageAd[]>([
     {
       id: 'usdt-rate',
@@ -254,27 +385,12 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
       statValue2: '1.5% fee',
       status: 'Active',
     },
-    {
-      id: 'referral-double',
-      tag: 'NEW PROMO',
-      headline: 'Referrals now pay double bonus.',
-      subtext: 'Give friends 2× sign-up bonus and earn 2% on every trade they make for 90 days.',
-      icon: 'Gift',
-      accent: 'emerald',
-      cta: 'Get my link',
-      targetUrl: '#earn',
-      statLabel1: 'Per referral',
-      statValue1: '2%',
-      statLabel2: 'Bonus window',
-      statValue2: '90 days',
-      status: 'Active',
-    },
   ]);
 
   const [adModalOpen, setAdModalOpen] = useState(false);
   const [editingAd, setEditingAd] = useState<HomepageAd | null>(null);
 
-  // ---------------- HANDLERS ----------------
+  // Handlers
   const handleUpdateTradeStatus = (tradeId: string, newStatus: 'New' | 'Quoted' | 'Settled' | 'Completed') => {
     setTradeRequests((prev) =>
       prev.map((t) => (t.id === tradeId ? { ...t, status: newStatus } : t))
@@ -351,7 +467,6 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
     setPartnerLinks((prev) => prev.filter((p) => p.id !== affId));
   };
 
-  // Handlers for Homepage Ads Spotlight
   const handleSaveHomepageAd = (adData: HomepageAd) => {
     if (editingAd) {
       setHomepageAds((prev) => prev.map((a) => (a.id === adData.id ? adData : a)));
@@ -372,7 +487,6 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
     setHomepageAds((prev) => prev.filter((a) => a.id !== adId));
   };
 
-  // Filtered requests
   const filteredTradeRequests = tradeRequests.filter(
     (t) => tradeFilterStatus === 'All' || t.status === tradeFilterStatus
   );
@@ -385,23 +499,16 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
 
   return (
     <div className="min-h-screen bg-[#070913] text-slate-100 font-sans flex flex-col antialiased selection:bg-purple-500 selection:text-white">
-      {/* Top Admin Navigation Bar */}
-      <header className="h-16 border-b border-slate-800/80 bg-[#090b17] px-4 sm:px-6 flex items-center justify-between z-20 sticky top-0">
-        <div className="flex items-center gap-3 sm:gap-6">
-          {/* Hamburger button on mobile */}
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="lg:hidden p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
-            aria-label="Toggle Navigation Sidebar"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="flex items-center">
-              <img src={lxLogo} alt="LXchange" className="h-10 sm:h-12 w-auto" />
+      {/* Top Header */}
+      <header className="h-16 border-b border-slate-800/80 bg-[#090b17] px-6 flex items-center justify-between z-20 sticky top-0">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center text-xl font-bold tracking-tight">
+              <span className="text-white">L</span>
+              <span className="text-purple-500 ml-1">X</span>
+              <span className="text-white ml-1">change</span>
             </div>
-            <span className="text-[10px] sm:text-[11px] font-semibold tracking-wider text-slate-400 uppercase font-mono border-l border-slate-800 pl-2 sm:pl-3">
+            <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase font-mono border-l border-slate-800 pl-3">
               TRADE DESK
             </span>
           </div>
@@ -409,7 +516,7 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
           {onBackToSite && (
             <button
               onClick={onBackToSite}
-              className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to Main Site
@@ -417,9 +524,8 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
           )}
         </div>
 
-        {/* User Badge */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          <span className="text-xs sm:text-sm font-medium text-slate-300 hidden sm:inline">Eljey · Admin</span>
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-slate-300">Eljey · Admin</span>
           <div className="w-8 h-8 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-sm shadow-md shadow-purple-900/40">
             E
           </div>
@@ -427,67 +533,101 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
       </header>
 
       <div className="flex flex-1">
-        {/* Left Navigation Sidebar - Desktop Inline Sidebar */}
-        <aside className="hidden lg:flex w-64 border-r border-slate-800/70 bg-[#070812] p-4 flex-col gap-1 flex-shrink-0">
-          <SidebarContent
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            tradeRequestsCount={tradeRequests.filter((t) => t.status === 'New').length}
-            vtuOrdersCount={vtuOrders.length}
-            tradeRatesCount={tradeRates.length}
-            totalAffiliatesCount={partnerLinks.length + homepageAds.length}
-            onBackToSite={onBackToSite}
-          />
+        {/* Left Navigation Sidebar */}
+        <aside className="w-64 border-r border-slate-800/70 bg-[#070812] p-4 flex flex-col gap-1 flex-shrink-0">
+          <nav className="space-y-1.5">
+            <button
+              onClick={() => setActiveTab('trade-requests')}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                activeTab === 'trade-requests'
+                  ? 'bg-[#1b1735] text-white border border-purple-900/40 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <ArrowLeftRight className={`w-4 h-4 ${activeTab === 'trade-requests' ? 'text-purple-400' : 'text-slate-400'}`} />
+                <span>Trade requests & Chat</span>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-red-500/90 text-white text-xs font-bold font-mono">
+                {tradeRequests.filter((t) => t.status === 'New').length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('vtu-orders')}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                activeTab === 'vtu-orders'
+                  ? 'bg-[#1b1735] text-white border border-purple-900/40 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Zap className={`w-4 h-4 ${activeTab === 'vtu-orders' ? 'text-purple-400' : 'text-slate-400'}`} />
+                <span>VTU orders</span>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-purple-600 text-white text-xs font-bold font-mono">
+                {vtuOrders.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('rates')}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                activeTab === 'rates'
+                  ? 'bg-[#1b1735] text-white border border-purple-900/40 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className={`font-semibold font-mono text-sm ${activeTab === 'rates' ? 'text-purple-400' : 'text-slate-400'}`}>₦</span>
+                <span>Rates & Assets</span>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 text-xs font-bold font-mono">
+                {tradeRates.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('affiliates')}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                activeTab === 'affiliates'
+                  ? 'bg-[#1b1735] text-white border border-purple-900/40 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Megaphone className={`w-4 h-4 ${activeTab === 'affiliates' ? 'text-purple-400' : 'text-slate-400'}`} />
+                <span>Affiliates & Banner Ads</span>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-purple-900 text-purple-200 text-xs font-bold font-mono">
+                {partnerLinks.length + homepageAds.length}
+              </span>
+            </button>
+          </nav>
         </aside>
 
-        {/* Left Navigation Sidebar - Mobile Swipe Drawer */}
-        <div className={`lg:hidden fixed inset-0 z-40 transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={() => setIsSidebarOpen(false)} />
-          {/* Drawer Body */}
-          <aside className={`absolute inset-y-0 left-0 w-64 bg-[#070812] border-r border-slate-800 p-4 flex flex-col gap-1 transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800/60 mb-4">
-              <span className="text-xs font-bold text-slate-400 font-mono tracking-wider">NAVIGATION</span>
-              <button onClick={() => setIsSidebarOpen(false)} className="p-1 text-slate-400 hover:text-white rounded-lg">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <SidebarContent
-              activeTab={activeTab}
-              setActiveTab={(tab) => {
-                setActiveTab(tab);
-                setIsSidebarOpen(false);
-              }}
-              tradeRequestsCount={tradeRequests.filter((t) => t.status === 'New').length}
-              vtuOrdersCount={vtuOrders.length}
-              tradeRatesCount={tradeRates.length}
-              totalAffiliatesCount={partnerLinks.length + homepageAds.length}
-              onBackToSite={onBackToSite}
-            />
-          </aside>
-        </div>
-
-        {/* Main Content Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl overflow-y-auto w-full">
-          {/* TAB 1: TRADE REQUESTS (Customer-Initiated Stream) */}
+        {/* Main Content Workspace */}
+        <main className="flex-1 p-8 max-w-7xl overflow-y-auto">
+          {/* TAB 1: TRADE REQUESTS & LIVE SETTLEMENT CHAT CONSOLE */}
           {activeTab === 'trade-requests' && (
-            <div className="space-y-6 sm:space-y-8 animate-fadeIn">
+            <div className="space-y-8 animate-fadeIn">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Trade requests</h1>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                    Customer sell-to-us requests submitted from the website. Open a request to review, quote, or settle.
+                  <h1 className="text-3xl font-bold text-white tracking-tight">
+                    Trade requests & Settlement Desk
+                  </h1>
+                  <p className="text-sm text-slate-400 mt-1">
+                    Review uploaded gift cards, verify blockchain transfers, chat live with customers, and execute NGN bank payouts.
                   </p>
                 </div>
 
-                {/* Filter Controls */}
-                <div className="flex flex-wrap items-center gap-1.5 bg-[#0d1021] p-1.5 rounded-xl border border-slate-800 max-w-full">
-                  <Filter className="w-4 h-4 text-slate-400 ml-1.5 hidden xs:block" />
+                <div className="flex items-center gap-2 bg-[#0d1021] p-1.5 rounded-xl border border-slate-800">
+                  <Filter className="w-4 h-4 text-slate-400 ml-2" />
                   {['All', 'New', 'Quoted', 'Settled', 'Completed'].map((st) => (
                     <button
                       key={st}
                       onClick={() => setTradeFilterStatus(st)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         tradeFilterStatus === st
                           ? 'bg-purple-600 text-white shadow-sm'
                           : 'text-slate-400 hover:text-white'
@@ -499,158 +639,391 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
                 </div>
               </div>
 
-              {/* 4 Stat Cards */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <div className="p-4 sm:p-5 rounded-2xl bg-[#0d1021] border border-slate-800/80 shadow-lg">
-                  <div className="text-2xl sm:text-3xl font-bold text-white">
-                    {tradeRequests.filter((t) => t.status === 'New').length}
+              {/* 2-COLUMN SETTLEMENT & CHAT WORKBENCH */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                {/* LEFT LIST: REQUEST INBOX */}
+                <div className="lg:col-span-4 rounded-2xl bg-[#0d1021] border border-slate-800/80 overflow-hidden shadow-xl space-y-2 p-3">
+                  <div className="p-3 border-b border-slate-800/80 flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
+                      INBOX ({filteredTradeRequests.length})
+                    </span>
+                    <span className="text-[10px] text-purple-400 font-mono">LIVE SYNC</span>
                   </div>
-                  <div className="text-[10px] sm:text-xs text-slate-400 font-medium mt-1 sm:mt-2">Awaiting quote</div>
-                </div>
 
-                <div className="p-4 sm:p-5 rounded-2xl bg-[#0d1021] border border-slate-800/80 shadow-lg">
-                  <div className="text-2xl sm:text-3xl font-bold text-amber-500">
-                    {tradeRequests.filter((t) => t.status === 'Quoted').length}
+                  <div className="space-y-2 max-h-[620px] overflow-y-auto pr-1">
+                    {filteredTradeRequests.map((req) => {
+                      const isSelected = selectedTrade?.id === req.id;
+                      return (
+                        <div
+                          key={req.id}
+                          onClick={() => setSelectedTrade(req)}
+                          className={`p-4 rounded-xl border transition-all cursor-pointer space-y-2.5 ${
+                            isSelected
+                              ? 'bg-[#181933] border-purple-500/80 shadow-lg shadow-purple-950/50'
+                              : 'bg-[#090b17] border-slate-800/80 hover:bg-slate-800/50'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-purple-400 animate-pulse' : 'bg-slate-600'}`} />
+                              <span className="font-bold text-white text-sm">{req.customerName}</span>
+                            </div>
+                            <span className="text-[11px] text-slate-400 font-mono">{req.receivedTime}</span>
+                          </div>
+
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-slate-300 font-medium">{req.actionDetails}</span>
+                            <span className="font-bold text-amber-400 font-mono">{req.estValue}</span>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-1">
+                            <span className="text-[10px] text-slate-400 font-mono">{req.customerPhone}</span>
+                            <span
+                              className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${
+                                req.status === 'New'
+                                  ? 'bg-red-500/20 text-red-400 border-red-500/30'
+                                  : req.status === 'Quoted'
+                                  ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                  : req.status === 'Settled'
+                                  ? 'bg-teal-500/20 text-teal-300 border-teal-500/30'
+                                  : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                              }`}
+                            >
+                              {req.status}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className="text-[10px] sm:text-xs text-slate-400 font-medium mt-1 sm:mt-2">Quoted</div>
                 </div>
 
-                <div className="p-4 sm:p-5 rounded-2xl bg-[#0d1021] border border-slate-800/80 shadow-lg">
-                  <div className="text-2xl sm:text-3xl font-bold text-white">₦4.2M</div>
-                  <div className="text-[10px] sm:text-xs text-slate-400 font-medium mt-1 sm:mt-2">Settled today</div>
-                </div>
+                {/* RIGHT WORKBENCH: LIVE CHAT & FULL SETTLEMENT EXECUTION */}
+                {selectedTrade ? (
+                  <div className="lg:col-span-8 space-y-6">
+                    {/* SETTLEMENT DETAILS WORKBENCH CARD */}
+                    <div className="rounded-2xl bg-[#0d1021] border border-slate-800/80 p-6 space-y-6 shadow-xl">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-purple-400 font-mono uppercase tracking-wider">
+                              SETTLEMENT WORKBENCH ({selectedTrade.id})
+                            </span>
+                            <span className="px-2.5 py-0.5 rounded-full bg-purple-950 text-purple-300 text-[10px] font-bold border border-purple-800/50">
+                              {selectedTrade.type === 'crypto' ? 'CRYPTOCURRENCY' : 'GIFT CARD'}
+                            </span>
+                          </div>
+                          <h2 className="text-2xl font-bold text-white mt-1">{selectedTrade.customerName}</h2>
+                          <p className="text-xs text-slate-400 font-mono">
+                            {selectedTrade.customerPhone} • {selectedTrade.customerEmail}
+                          </p>
+                        </div>
 
-                <div className="p-4 sm:p-5 rounded-2xl bg-[#0d1021] border border-slate-800/80 shadow-lg">
-                  <div className="text-2xl sm:text-3xl font-bold text-emerald-400">6.5 m</div>
-                  <div className="text-[10px] sm:text-xs text-slate-400 font-medium mt-1 sm:mt-2">Avg response</div>
-                </div>
-              </div>
+                        {/* Status Action Pills */}
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleUpdateTradeStatus(selectedTrade.id, 'Quoted')}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                              selectedTrade.status === 'Quoted'
+                                ? 'bg-amber-500 text-slate-950 font-bold border-amber-400'
+                                : 'bg-amber-950/40 text-amber-400 border-amber-800/50 hover:bg-amber-900/60'
+                            }`}
+                          >
+                            Mark Quoted
+                          </button>
+                          <button
+                            onClick={() => handleUpdateTradeStatus(selectedTrade.id, 'Settled')}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                              selectedTrade.status === 'Settled'
+                                ? 'bg-teal-500 text-slate-950 font-bold border-teal-400'
+                                : 'bg-teal-950/40 text-teal-300 border-teal-800/50 hover:bg-teal-900/60'
+                            }`}
+                          >
+                            Mark Settled
+                          </button>
+                          <button
+                            onClick={() => handleUpdateTradeStatus(selectedTrade.id, 'Completed')}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                              selectedTrade.status === 'Completed'
+                                ? 'bg-emerald-500 text-slate-950 font-bold border-emerald-400'
+                                : 'bg-emerald-950/40 text-emerald-400 border-emerald-800/50 hover:bg-emerald-900/60'
+                            }`}
+                          >
+                            Complete Payout
+                          </button>
+                        </div>
+                      </div>
 
-              {/* Requests Table */}
-              <div className="rounded-2xl bg-[#0d1021] border border-slate-800/80 overflow-hidden shadow-xl">
-                <div className="p-4 sm:p-5 border-b border-slate-800/80">
-                  <h2 className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
-                    CUSTOMER REQUESTS INBOX ({filteredTradeRequests.length})
-                  </h2>
-                </div>
+                      {/* WORKBENCH DETAILS ACCORDION */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* 1. ASSET SPECIFIC VERIFICATION BOX (CARD CODE / CRYPTO TXHASH) */}
+                        <div className="p-5 rounded-xl bg-[#090b17] border border-slate-800 space-y-4">
+                          <div className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono flex items-center justify-between">
+                            <span>1. ASSET VERIFICATION DETAILS</span>
+                            <span className="text-[10px] text-purple-400 font-mono">
+                              {selectedTrade.type === 'giftcard' ? 'CARD CODE / PHOTO' : 'BLOCKCHAIN TX'}
+                            </span>
+                          </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm border-collapse min-w-[800px]">
-                    <thead>
-                      <tr className="border-b border-slate-800/80 text-[11px] font-bold text-slate-400 uppercase font-mono bg-[#0a0d1b]/50">
-                        <th className="py-3.5 px-6">CUSTOMER</th>
-                        <th className="py-3.5 px-6">TRADE DETAILS</th>
-                        <th className="py-3.5 px-6">EST. PAYOUT</th>
-                        <th className="py-3.5 px-6">STATUS</th>
-                        <th className="py-3.5 px-6">RECEIVED</th>
-                        <th className="py-3.5 px-6 text-right">ACTION</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60">
-                      {filteredTradeRequests.map((req) => (
-                        <tr key={req.id} className="hover:bg-slate-800/40 transition-colors cursor-pointer group">
-                          <td className="py-4 px-6" onClick={() => setSelectedTrade(req)}>
-                            <div className="flex items-center gap-2.5">
-                              <span className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0" />
+                          {/* IF GIFT CARD */}
+                          {selectedTrade.type === 'giftcard' && selectedTrade.cardDetails && (
+                            <div className="space-y-3">
                               <div>
-                                <div className="font-semibold text-white group-hover:text-purple-300 transition-colors">
-                                  {req.customerName}
-                                </div>
-                                <div className="text-xs text-slate-400 font-mono mt-0.5">
-                                  {req.customerPhone}
+                                <label className="text-[11px] text-slate-400 block font-mono">GIFT CARD E-CODE / PIN</label>
+                                <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#14182e] border border-slate-700 font-mono text-sm font-bold text-amber-400 mt-1">
+                                  <span>{selectedTrade.cardDetails.code}</span>
+                                  <button
+                                    onClick={() => handleCopy(selectedTrade.cardDetails!.code, 'code')}
+                                    className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                                  >
+                                    {copiedField === 'code' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                                    {copiedField === 'code' ? 'Copied' : 'Copy'}
+                                  </button>
                                 </div>
                               </div>
-                            </div>
-                          </td>
 
-                          <td className="py-4 px-6" onClick={() => setSelectedTrade(req)}>
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center text-xs font-bold font-mono">
-                                {req.type === 'crypto' ? '₿' : '💳'}
+                              <div className="grid grid-cols-2 gap-2 text-xs">
+                                <div>
+                                  <span className="text-slate-400 block">Condition:</span>
+                                  <span className="font-medium text-slate-200">{selectedTrade.cardDetails.condition}</span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-400 block">Country:</span>
+                                  <span className="font-medium text-slate-200">{selectedTrade.cardDetails.country}</span>
+                                </div>
                               </div>
+
+                              {/* Uploaded Card Image Preview */}
                               <div>
-                                <div className="font-semibold text-white">{req.assetName}</div>
-                                <div className="text-xs text-slate-400 font-medium">{req.actionDetails}</div>
+                                <label className="text-[11px] text-slate-400 block font-mono">UPLOADED CARD PHOTO & RECEIPT</label>
+                                <div className="flex gap-3 mt-1.5">
+                                  <div
+                                    onClick={() => setCardImageLightbox(selectedTrade.cardDetails!.cardImageUrl)}
+                                    className="w-24 h-16 rounded-xl bg-slate-900 border border-slate-700 overflow-hidden relative group cursor-pointer"
+                                  >
+                                    <img
+                                      src={selectedTrade.cardDetails.cardImageUrl}
+                                      alt="Card Photo"
+                                      className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                    />
+                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[10px] font-semibold">
+                                      Inspect Photo
+                                    </div>
+                                  </div>
+
+                                  {selectedTrade.cardDetails.receiptImageUrl && (
+                                    <div
+                                      onClick={() => setCardImageLightbox(selectedTrade.cardDetails!.receiptImageUrl!)}
+                                      className="w-24 h-16 rounded-xl bg-slate-900 border border-slate-700 overflow-hidden relative group cursor-pointer"
+                                    >
+                                      <img
+                                        src={selectedTrade.cardDetails.receiptImageUrl}
+                                        alt="Receipt Photo"
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                      />
+                                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[10px] font-semibold">
+                                        Inspect Receipt
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </td>
+                          )}
 
-                          <td className="py-4 px-6 font-semibold text-white font-mono" onClick={() => setSelectedTrade(req)}>
-                            {req.estValue}
-                          </td>
+                          {/* IF CRYPTO */}
+                          {selectedTrade.type === 'crypto' && selectedTrade.cryptoDetails && (
+                            <div className="space-y-3">
+                              <div>
+                                <label className="text-[11px] text-slate-400 block font-mono">BLOCKCHAIN DEPOSIT NETWORK</label>
+                                <div className="p-2.5 rounded-xl bg-[#14182e] border border-slate-700 text-xs font-bold text-purple-300 mt-1">
+                                  {selectedTrade.cryptoDetails.network}
+                                </div>
+                              </div>
 
-                          <td className="py-4 px-6" onClick={() => setSelectedTrade(req)}>
-                            {req.status === 'New' && (
-                              <span className="px-3 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-semibold">
-                                New
-                              </span>
-                            )}
-                            {req.status === 'Quoted' && (
-                              <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-semibold">
-                                Quoted
-                              </span>
-                            )}
-                            {req.status === 'Settled' && (
-                              <span className="px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-semibold">
-                                Settled
-                              </span>
-                            )}
-                            {req.status === 'Completed' && (
-                              <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">
-                                Completed
-                              </span>
-                            )}
-                          </td>
+                              <div>
+                                <label className="text-[11px] text-slate-400 block font-mono">TRANSACTION HASH (TxHash)</label>
+                                <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#14182e] border border-slate-700 font-mono text-xs text-slate-200 mt-1">
+                                  <span className="truncate max-w-[200px]">{selectedTrade.cryptoDetails.txHash || 'Pending confirmation'}</span>
+                                  {selectedTrade.cryptoDetails.txHash && (
+                                    <button
+                                      onClick={() => handleCopy(selectedTrade.cryptoDetails!.txHash!, 'txhash')}
+                                      className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                                    >
+                                      {copiedField === 'txhash' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                                      {copiedField === 'txhash' ? 'Copied' : 'Copy'}
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
 
-                          <td className="py-4 px-6 text-slate-400 text-xs font-medium" onClick={() => setSelectedTrade(req)}>
-                            {req.receivedTime}
-                          </td>
-
-                          <td className="py-4 px-6 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <button
-                                onClick={() => setSelectedTrade(req)}
-                                className="px-3 py-1.5 rounded-lg bg-purple-900/40 border border-purple-700/50 text-purple-200 hover:bg-purple-800/60 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
-                              >
-                                Review & Quote
-                              </button>
-                              <button
-                                onClick={() => handleDeleteTradeRequest(req.id)}
-                                className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-red-400 transition-colors cursor-pointer"
-                                title="Dismiss Request"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                              <div>
+                                <label className="text-[11px] text-slate-400 block font-mono">LXCHANGE DEPOSIT WALLET</label>
+                                <div className="p-2 rounded-xl bg-[#14182e] border border-slate-700 font-mono text-[11px] text-slate-300 truncate mt-1">
+                                  {selectedTrade.cryptoDetails.receivingWallet}
+                                </div>
+                              </div>
                             </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                          )}
+                        </div>
+
+                        {/* 2. CUSTOMER PAYOUT BANK ACCOUNT DETAILS */}
+                        <div className="p-5 rounded-xl bg-[#090b17] border border-slate-800 space-y-4">
+                          <div className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono flex items-center justify-between">
+                            <span>2. CUSTOMER PAYOUT BANK ACCOUNT</span>
+                            <Building2 className="w-4 h-4 text-emerald-400" />
+                          </div>
+
+                          <div className="space-y-3 text-xs">
+                            <div>
+                              <span className="text-slate-400 block font-mono">BANK NAME</span>
+                              <span className="font-bold text-white text-sm">{selectedTrade.payoutBank.bankName}</span>
+                            </div>
+
+                            <div>
+                              <span className="text-slate-400 block font-mono">ACCOUNT NUMBER</span>
+                              <div className="flex items-center justify-between p-2 rounded-xl bg-[#14182e] border border-slate-700 font-mono text-sm font-bold text-emerald-400 mt-1">
+                                <span>{selectedTrade.payoutBank.accountNumber}</span>
+                                <button
+                                  onClick={() => handleCopy(selectedTrade.payoutBank.accountNumber, 'acc')}
+                                  className="px-2 py-0.5 rounded bg-slate-800 text-slate-200 text-xs font-semibold cursor-pointer"
+                                >
+                                  {copiedField === 'acc' ? 'Copied' : 'Copy Acc'}
+                                </button>
+                              </div>
+                            </div>
+
+                            <div>
+                              <span className="text-slate-400 block font-mono">BENEFICIARY NAME</span>
+                              <span className="font-semibold text-slate-200">{selectedTrade.payoutBank.accountName}</span>
+                            </div>
+
+                            <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                              <span className="text-slate-400 font-mono">TOTAL NAIRA PAYOUT:</span>
+                              <span className="text-xl font-bold text-amber-400 font-mono">{selectedTrade.estValue}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* LIVE CUSTOMER CHAT CONSOLE CARD */}
+                    <div className="rounded-2xl bg-[#0d1021] border border-slate-800/80 p-6 space-y-4 shadow-xl">
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div className="flex items-center gap-2">
+                          <MessageSquare className="w-5 h-5 text-purple-400" />
+                          <h3 className="font-bold text-white text-base">
+                            Live Customer Chat Console — {selectedTrade.customerName}
+                          </h3>
+                        </div>
+                        <span className="text-xs text-emerald-400 font-mono flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                          Customer Online
+                        </span>
+                      </div>
+
+                      {/* Chat Messages Log */}
+                      <div className="p-4 rounded-xl bg-[#080914] border border-slate-800/80 h-64 overflow-y-auto space-y-3 text-xs font-sans">
+                        {selectedTrade.chatHistory.map((msg) => (
+                          <div
+                            key={msg.id}
+                            className={`flex flex-col max-w-[80%] ${
+                              msg.sender === 'admin'
+                                ? 'ml-auto items-end'
+                                : msg.sender === 'bot'
+                                ? 'mr-auto items-start opacity-90'
+                                : 'mr-auto items-start'
+                            }`}
+                          >
+                            <div className="flex items-center gap-1.5 mb-1 text-[10px] text-slate-400 font-mono">
+                              <span>
+                                {msg.sender === 'admin' ? 'You (Admin)' : msg.sender === 'bot' ? 'LX Desk Bot' : selectedTrade.customerName}
+                              </span>
+                              <span>•</span>
+                              <span>{msg.timestamp}</span>
+                            </div>
+                            <div
+                              className={`p-3 rounded-2xl leading-relaxed ${
+                                msg.sender === 'admin'
+                                  ? 'bg-purple-600 text-white rounded-br-none'
+                                  : msg.sender === 'bot'
+                                  ? 'bg-slate-900 border border-purple-900/40 text-purple-200 rounded-bl-none'
+                                  : 'bg-slate-800 text-slate-100 rounded-bl-none'
+                              }`}
+                            >
+                              {msg.text}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Admin Quick Replies */}
+                      <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+                        <span className="text-[11px] text-slate-400 font-mono flex-shrink-0">Quick Replies:</span>
+                        {[
+                          'Send bank account details',
+                          'Card verified! Payout dispatched',
+                          'Please upload a clearer card image',
+                          'Crypto deposit received & verified',
+                          'Code invalid or already redeemed',
+                        ].map((quick, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => handleSendAdminChat(quick)}
+                            className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-purple-500 whitespace-nowrap transition-all cursor-pointer flex-shrink-0"
+                          >
+                            {quick}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Chat Input Bar */}
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          placeholder={`Message ${selectedTrade.customerName}...`}
+                          value={adminChatInput}
+                          onChange={(e) => setAdminChatInput(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleSendAdminChat()}
+                          className="flex-1 px-4 py-2.5 rounded-xl bg-[#14182e] border border-slate-700 text-white text-xs focus:outline-none focus:border-purple-500 font-medium"
+                        />
+                        <button
+                          onClick={() => handleSendAdminChat()}
+                          className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-md shadow-purple-900/40"
+                        >
+                          <Send className="w-3.5 h-3.5" />
+                          Send
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="lg:col-span-8 p-12 text-center text-slate-400 bg-[#0d1021] rounded-2xl border border-slate-800">
+                    Select a customer trade request from the inbox list to open settlement details and live chat.
+                  </div>
+                )}
               </div>
             </div>
           )}
 
-          {/* TAB 2: VTU ORDERS (Automated Stream) */}
+          {/* TAB 2: VTU ORDERS */}
           {activeTab === 'vtu-orders' && (
-            <div className="space-y-6 sm:space-y-8 animate-fadeIn">
+            <div className="space-y-8 animate-fadeIn">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">VTU orders</h1>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                  <h1 className="text-3xl font-bold text-white tracking-tight">VTU orders</h1>
+                  <p className="text-sm text-slate-400 mt-1">
                     Automated fulfillment via VTpass, Reloadly, and Razer Gold APIs. You step in only when API fails.
                   </p>
                 </div>
 
-                {/* Filter */}
-                <div className="flex flex-wrap items-center gap-1.5 bg-[#0d1021] p-1.5 rounded-xl border border-slate-800 max-w-full">
-                  <Filter className="w-4 h-4 text-slate-400 ml-1.5 hidden xs:block" />
+                <div className="flex items-center gap-2 bg-[#0d1021] p-1.5 rounded-xl border border-slate-800">
+                  <Filter className="w-4 h-4 text-slate-400 ml-2" />
                   {['All', 'Delivered', 'Failed'].map((st) => (
                     <button
                       key={st}
                       onClick={() => setVtuFilterStatus(st)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         vtuFilterStatus === st
                           ? 'bg-purple-600 text-white shadow-sm'
                           : 'text-slate-400 hover:text-white'
@@ -663,7 +1036,7 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
               </div>
 
               {/* Info Alert */}
-              <div className="p-3.5 sm:p-4 rounded-xl bg-[#09152b]/80 border border-cyan-500/30 text-cyan-200 text-xs leading-relaxed flex items-start gap-3 shadow-md">
+              <div className="p-4 rounded-xl bg-[#09152b]/80 border border-cyan-500/30 text-cyan-200 text-xs leading-relaxed flex items-start gap-3 shadow-md">
                 <Info className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold text-cyan-300">Automated Pipeline:</span> Customers initiate VTU orders from the main site. The backend calls provider APIs for instant delivery. Failed orders automatically flag here so you can trigger a 1-click retry or issue a refund.
@@ -671,40 +1044,40 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
               </div>
 
               {/* Stat Cards */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <div className="p-4 sm:p-5 rounded-2xl bg-[#0d1021] border border-slate-800/80 shadow-lg">
-                  <div className="text-2xl sm:text-3xl font-bold text-white">{vtuOrders.length}</div>
-                  <div className="text-[10px] sm:text-xs text-slate-400 font-medium mt-1 sm:mt-2">Total orders today</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-5 rounded-2xl bg-[#0d1021] border border-slate-800/80 shadow-lg">
+                  <div className="text-3xl font-bold text-white">{vtuOrders.length}</div>
+                  <div className="text-xs text-slate-400 font-medium mt-2">Total orders today</div>
                 </div>
 
-                <div className="p-4 sm:p-5 rounded-2xl bg-[#0d1021] border border-slate-800/80 shadow-lg">
-                  <div className="text-2xl sm:text-3xl font-bold text-amber-500">₦86,400</div>
-                  <div className="text-[10px] sm:text-xs text-slate-400 font-medium mt-1 sm:mt-2">VTU revenue</div>
+                <div className="p-5 rounded-2xl bg-[#0d1021] border border-slate-800/80 shadow-lg">
+                  <div className="text-3xl font-bold text-amber-400">₦86,400</div>
+                  <div className="text-xs text-slate-400 font-medium mt-2">VTU revenue</div>
                 </div>
 
-                <div className="p-4 sm:p-5 rounded-2xl bg-[#0d1021] border border-slate-800/80 shadow-lg">
-                  <div className="text-2xl sm:text-3xl font-bold text-emerald-400">96%</div>
-                  <div className="text-[10px] sm:text-xs text-slate-400 font-medium mt-1 sm:mt-2">Auto-fulfilled rate</div>
+                <div className="p-5 rounded-2xl bg-[#0d1021] border border-slate-800/80 shadow-lg">
+                  <div className="text-3xl font-bold text-emerald-400">96%</div>
+                  <div className="text-xs text-slate-400 font-medium mt-2">Auto-fulfilled rate</div>
                 </div>
 
-                <div className="p-4 sm:p-5 rounded-2xl bg-[#0d1021] border border-slate-800/80 shadow-lg">
-                  <div className="text-2xl sm:text-3xl font-bold text-red-500">
+                <div className="p-5 rounded-2xl bg-[#0d1021] border border-slate-800/80 shadow-lg">
+                  <div className="text-3xl font-bold text-red-500">
                     {vtuOrders.filter((o) => o.status.includes('Failed')).length}
                   </div>
-                  <div className="text-[10px] sm:text-xs text-slate-400 font-medium mt-1 sm:mt-2">Needs attention</div>
+                  <div className="text-xs text-slate-400 font-medium mt-2">Needs attention</div>
                 </div>
               </div>
 
               {/* Orders Table */}
               <div className="rounded-2xl bg-[#0d1021] border border-slate-800/80 overflow-hidden shadow-xl">
-                <div className="p-4 sm:p-5 border-b border-slate-800/80">
-                  <h2 className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
+                <div className="p-5 border-b border-slate-800/80">
+                  <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
                     LIVE AUTOMATED ORDERS STREAM ({filteredVtuOrders.length})
                   </h2>
                 </div>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm border-collapse min-w-[850px]">
+                  <table className="w-full text-left text-sm border-collapse">
                     <thead>
                       <tr className="border-b border-slate-800/80 text-[11px] font-bold text-slate-400 uppercase font-mono bg-[#0a0d1b]/50">
                         <th className="py-3.5 px-6">ORDER ID</th>
@@ -758,7 +1131,7 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
                             {order.status.includes('Failed') ? (
                               <button
                                 onClick={() => handleRetryVtuOrder(order.orderId)}
-                                className="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold flex items-center gap-1.5 ml-auto transition-all cursor-pointer shadow-md shadow-red-900/40 whitespace-nowrap"
+                                className="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold flex items-center gap-1.5 ml-auto transition-all cursor-pointer shadow-md shadow-red-900/40"
                               >
                                 <RefreshCw className="w-3.5 h-3.5" />
                                 Retry API Call
@@ -776,15 +1149,14 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
             </div>
           )}
 
-          {/* TAB 3: RATES & ASSETS (Admin Creation & Master Control) */}
+          {/* TAB 3: RATES & ASSETS */}
           {activeTab === 'rates' && (
-            <div className="space-y-8 sm:space-y-10 animate-fadeIn">
-              {/* SECTION A: TRADABLE ASSETS & RATES */}
+            <div className="space-y-10 animate-fadeIn">
               <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Rates & Asset Configuration</h1>
-                    <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                    <h1 className="text-3xl font-bold text-white tracking-tight">Rates & Asset Configuration</h1>
+                    <p className="text-sm text-slate-400 mt-1">
                       Configure what coins or gift cards LXchange buys and sells. Add new tokens (e.g. Solana), adjust rates, or pause trading anytime.
                     </p>
                   </div>
@@ -793,23 +1165,22 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
                       setEditingAsset(null);
                       setAssetModalOpen(true);
                     }}
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-900/40 transition-all cursor-pointer whitespace-nowrap"
+                    className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm flex items-center gap-2 shadow-lg shadow-purple-900/40 transition-all cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     Add Tradable Asset / Token
                   </button>
                 </div>
 
-                {/* Assets Table */}
                 <div className="rounded-2xl bg-[#0d1021] border border-slate-800/80 overflow-hidden shadow-xl">
-                  <div className="p-4 sm:p-5 border-b border-slate-800/80 flex items-center justify-between">
-                    <h2 className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
+                  <div className="p-5 border-b border-slate-800/80 flex items-center justify-between">
+                    <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
                       TRADABLE ASSETS PORTFOLIO ({tradeRates.length})
                     </h2>
                   </div>
 
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm border-collapse min-w-[850px]">
+                    <table className="w-full text-left text-sm border-collapse">
                       <thead>
                         <tr className="border-b border-slate-800/80 text-[11px] font-bold text-slate-400 uppercase font-mono bg-[#0a0d1b]/50">
                           <th className="py-3.5 px-6">ASSET / TOKEN</th>
@@ -884,12 +1255,12 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
                 </div>
               </div>
 
-              {/* SECTION B: VTU PRICING RULES */}
+              {/* VTU PRICING RULES */}
               <div className="space-y-6 pt-4 border-t border-slate-800/80">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">VTU Pricing & Profit Rules</h2>
-                    <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                    <h2 className="text-2xl font-bold text-white tracking-tight">VTU Pricing & Profit Rules</h2>
+                    <p className="text-sm text-slate-400 mt-1">
                       Set provider cost baselines and profit margins for Airtime, Data, Cable TV, and Gaming top-ups.
                     </p>
                   </div>
@@ -898,7 +1269,7 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
                       setEditingVtuPrice(null);
                       setVtuPriceModalOpen(true);
                     }}
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-purple-900/60 border border-purple-700/50 text-purple-200 hover:bg-purple-800/80 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap"
+                    className="px-4 py-2.5 rounded-xl bg-purple-900/60 border border-purple-700/50 text-purple-200 hover:bg-purple-800/80 font-semibold text-sm flex items-center gap-2 transition-all cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     Add VTU Category Rule
@@ -906,14 +1277,14 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
                 </div>
 
                 <div className="rounded-2xl bg-[#0d1021] border border-slate-800/80 overflow-hidden shadow-xl">
-                  <div className="p-4 sm:p-5 border-b border-slate-800/80">
-                    <h2 className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
+                  <div className="p-5 border-b border-slate-800/80">
+                    <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
                       ACTIVE PRICING RULES ({vtuPricing.length})
                     </h2>
                   </div>
 
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm border-collapse min-w-[850px]">
+                    <table className="w-full text-left text-sm border-collapse">
                       <thead>
                         <tr className="border-b border-slate-800/80 text-[11px] font-bold text-slate-400 uppercase font-mono bg-[#0a0d1b]/50">
                           <th className="py-3.5 px-6">CATEGORY</th>
@@ -987,17 +1358,16 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
 
           {/* TAB 4: AFFILIATES & HOMEPAGE BANNER ADS */}
           {activeTab === 'affiliates' && (
-            <div className="space-y-8 sm:space-y-10 animate-fadeIn font-sans font-sans">
-              {/* SECTION A: HOMEPAGE BANNER ADS SPOTLIGHT MANAGER */}
+            <div className="space-y-10 animate-fadeIn">
               <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
+                    <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-2">
+                      <Sparkles className="w-6 h-6 text-amber-400" />
                       Homepage Banner Ads Spotlight
                     </h1>
-                    <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                      Full admin control over the featured promo banner displayed on the homepage before Live Markets. Edit headlines, tags, CTA links, colors, and stat badges.
+                    <p className="text-sm text-slate-400 mt-1">
+                      Full admin control over the featured promo ad carousel displayed on the homepage before Live Markets.
                     </p>
                   </div>
                   <button
@@ -1005,15 +1375,14 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
                       setEditingAd(null);
                       setAdModalOpen(true);
                     }}
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-900/40 transition-all cursor-pointer whitespace-nowrap"
+                    className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm flex items-center gap-2 shadow-lg shadow-purple-900/40 transition-all cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     Create New Banner Ad
                   </button>
                 </div>
 
-                {/* Ads Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {homepageAds.map((ad) => (
                     <div
                       key={ad.id}
@@ -1036,21 +1405,21 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
                           </span>
                           <button
                             onClick={() => handleToggleAdStatus(ad.id)}
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border flex items-center gap-1 cursor-pointer transition-all ${
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border flex items-center gap-1 cursor-pointer ${
                               ad.status === 'Active'
                                 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
                                 : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
                             }`}
                           >
                             <span className={`w-1.5 h-1.5 rounded-full ${ad.status === 'Active' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-                            {ad.status === 'Active' ? 'Live' : 'Paused'}
+                            {ad.status === 'Active' ? 'Live on Homepage' : 'Paused'}
                           </button>
                         </div>
 
                         <h3 className="font-bold text-white text-base leading-snug">{ad.headline}</h3>
                         <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">{ad.subtext}</p>
 
-                        <div className="flex flex-wrap items-center gap-1.5 pt-1 font-mono text-[10px] sm:text-[11px] text-slate-300">
+                        <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-slate-300">
                           <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800">
                             {ad.statLabel1}: {ad.statValue1}
                           </span>
@@ -1060,7 +1429,7 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
                         </div>
                       </div>
 
-                      <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between mt-2">
+                      <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
                         <span className="text-xs font-semibold text-purple-400">{ad.cta} →</span>
                         <div className="flex items-center gap-2">
                           <button
@@ -1087,12 +1456,12 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
                 </div>
               </div>
 
-              {/* SECTION B: AFFILIATE PARTNER PROGRAM PLACEMENTS */}
+              {/* PARTNER PLACEMENTS */}
               <div className="space-y-6 pt-6 border-t border-slate-800/80">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight font-sans font-sans">Affiliate Partner Placements</h2>
-                    <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                    <h2 className="text-2xl font-bold text-white tracking-tight">Affiliate Partner Placements</h2>
+                    <p className="text-sm text-slate-400 mt-1">
                       Manage third-party hardware wallet & security partner links embedded across LXchange.
                     </p>
                   </div>
@@ -1101,23 +1470,22 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
                       setEditingAffiliate(null);
                       setAffiliateModalOpen(true);
                     }}
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-purple-900/60 border border-purple-700/50 text-purple-200 hover:bg-purple-800/80 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap"
+                    className="px-4 py-2.5 rounded-xl bg-purple-900/60 border border-purple-700/50 text-purple-200 hover:bg-purple-800/80 font-semibold text-sm flex items-center gap-2 transition-all cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     Add Partner Link
                   </button>
                 </div>
 
-                {/* Partner Links Table */}
                 <div className="rounded-2xl bg-[#0d1021] border border-slate-800/80 overflow-hidden shadow-xl">
-                  <div className="p-4 sm:p-5 border-b border-slate-800/80">
-                    <h2 className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
+                  <div className="p-5 border-b border-slate-800/80">
+                    <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
                       ACTIVE PARTNER PLACEMENTS ({partnerLinks.length})
                     </h2>
                   </div>
 
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm border-collapse min-w-[850px]">
+                    <table className="w-full text-left text-sm border-collapse">
                       <thead>
                         <tr className="border-b border-slate-800/80 text-[11px] font-bold text-slate-400 uppercase font-mono bg-[#0a0d1b]/50">
                           <th className="py-3.5 px-6">PARTNER BRAND</th>
@@ -1196,77 +1564,22 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
         </main>
       </div>
 
-      {/* ---------------- MODAL 1: TRADE REQUEST REVIEW ---------------- */}
-      {selectedTrade && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-[#0f1224] border border-slate-700 shadow-2xl overflow-hidden p-5 sm:p-6 space-y-5 sm:space-y-6 animate-scaleUp">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <div>
-                <span className="text-xs font-mono text-purple-400 font-bold uppercase tracking-wider">
-                  CUSTOMER REQUEST REVIEW ({selectedTrade.id})
-                </span>
-                <h3 className="text-lg sm:text-xl font-bold text-white mt-1">{selectedTrade.customerName}</h3>
-                <p className="text-xs text-slate-400 font-mono">{selectedTrade.customerPhone}</p>
-              </div>
-              <button
-                onClick={() => setSelectedTrade(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-3 bg-[#090b17] p-4 rounded-xl border border-slate-800/80 text-xs sm:text-sm">
-              <div className="flex justify-between gap-4">
-                <span className="text-slate-400 whitespace-nowrap">Trade Action:</span>
-                <span className="font-semibold text-white text-right">{selectedTrade.actionDetails}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-slate-400 whitespace-nowrap">Est. Payout Amount:</span>
-                <span className="font-bold text-amber-400 font-mono text-right">{selectedTrade.estValue}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-slate-400 whitespace-nowrap">Received Timestamp:</span>
-                <span className="text-slate-300 font-mono text-right">{selectedTrade.receivedTime}</span>
-              </div>
-              <div className="flex justify-between items-center pt-1 border-t border-slate-800/60 gap-4">
-                <span className="text-slate-400">Current Status:</span>
-                <span className="px-3 py-1 rounded-full bg-purple-950 text-purple-300 font-semibold text-xs border border-purple-800/50">
-                  {selectedTrade.status}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider font-mono">
-                ADMIN ACTION CONTROLS
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => handleUpdateTradeStatus(selectedTrade.id, 'Quoted')}
-                  className="py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-md shadow-amber-900/30"
-                >
-                  Mark as Quoted
-                </button>
-                <button
-                  onClick={() => handleUpdateTradeStatus(selectedTrade.id, 'Settled')}
-                  className="py-2.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-md shadow-teal-900/30"
-                >
-                  Mark as Settled
-                </button>
-                <button
-                  onClick={() => handleUpdateTradeStatus(selectedTrade.id, 'Completed')}
-                  className="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer col-span-2 shadow-md shadow-emerald-900/30"
-                >
-                  Settle & Complete Trade
-                </button>
-              </div>
+      {/* ---------------- CARD IMAGE LIGHTBOX MODAL ---------------- */}
+      {cardImageLightbox && (
+        <div
+          onClick={() => setCardImageLightbox(null)}
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
+        >
+          <div className="relative max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl border border-slate-700 shadow-2xl p-2 bg-[#090b17]">
+            <img src={cardImageLightbox} alt="Card Inspection High Res" className="max-w-full max-h-[85vh] object-contain rounded-xl" />
+            <div className="absolute top-4 right-4 bg-black/80 text-white p-2 rounded-full cursor-pointer hover:bg-slate-800">
+              <X className="w-5 h-5" />
             </div>
           </div>
         </div>
       )}
 
-      {/* ---------------- MODAL 2: ASSET & RATES MODAL (TOOLTIPS ON ALL FIELDS) ---------------- */}
+      {/* ---------------- MODALS WITH TOOLTIPS ---------------- */}
       {assetModalOpen && (
         <AssetConfigModal
           asset={editingAsset}
@@ -1278,7 +1591,6 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
         />
       )}
 
-      {/* ---------------- MODAL 3: VTU PRICING RULE MODAL (TOOLTIPS ON ALL FIELDS) ---------------- */}
       {vtuPriceModalOpen && (
         <VTUPricingRuleModal
           pricing={editingVtuPrice}
@@ -1290,7 +1602,6 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
         />
       )}
 
-      {/* ---------------- MODAL 4: AFFILIATE LINK MODAL (TOOLTIPS ON ALL FIELDS) ---------------- */}
       {affiliateModalOpen && (
         <AffiliateConfigModal
           affiliate={editingAffiliate}
@@ -1302,7 +1613,6 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
         />
       )}
 
-      {/* ---------------- MODAL 5: HOMEPAGE BANNER AD MODAL (LIVE PREVIEW & TOOLTIPS) ---------------- */}
       {adModalOpen && (
         <HomepageAdModal
           ad={editingAd}
@@ -1317,122 +1627,9 @@ export const AdminDashboard: React.FC<{ onBackToSite?: () => void }> = ({ onBack
   );
 };
 
-// =========================================================================
-// REUSABLE RESPONSIVE SIDEBAR NAVIGATION COMPONENT
-// =========================================================================
-const SidebarContent: React.FC<{
-  activeTab: string;
-  setActiveTab: (tab: any) => void;
-  tradeRequestsCount: number;
-  vtuOrdersCount: number;
-  tradeRatesCount: number;
-  totalAffiliatesCount: number;
-  onBackToSite?: () => void;
-}> = ({
-  activeTab,
-  setActiveTab,
-  tradeRequestsCount,
-  vtuOrdersCount,
-  tradeRatesCount,
-  totalAffiliatesCount,
-  onBackToSite
-}) => {
-  return (
-    <nav className="flex-1 space-y-1.5 flex flex-col justify-between">
-      <div className="space-y-1.5">
-        {/* Nav 1: Trade requests */}
-        <button
-          onClick={() => setActiveTab('trade-requests')}
-          className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
-            activeTab === 'trade-requests'
-              ? 'bg-[#1b1735] text-white border border-purple-900/40 shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <ArrowLeftRight className={`w-4 h-4 ${activeTab === 'trade-requests' ? 'text-purple-400' : 'text-slate-400'}`} />
-            <span>Trade requests</span>
-          </div>
-          <span className="px-2 py-0.5 rounded-full bg-red-500/90 text-white text-xs font-bold font-mono">
-            {tradeRequestsCount}
-          </span>
-        </button>
+// ---------------- CONFIGURATION MODALS WITH TOOLTIPS ----------------
 
-        {/* Nav 2: VTU orders */}
-        <button
-          onClick={() => setActiveTab('vtu-orders')}
-          className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
-            activeTab === 'vtu-orders'
-              ? 'bg-[#1b1735] text-white border border-purple-900/40 shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <Zap className={`w-4 h-4 ${activeTab === 'vtu-orders' ? 'text-purple-400' : 'text-slate-400'}`} />
-            <span>VTU orders</span>
-          </div>
-          <span className="px-2 py-0.5 rounded-full bg-purple-600 text-white text-xs font-bold font-mono">
-            {vtuOrdersCount}
-          </span>
-        </button>
-
-        {/* Nav 3: Rates & Assets */}
-        <button
-          onClick={() => setActiveTab('rates')}
-          className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
-            activeTab === 'rates'
-              ? 'bg-[#1b1735] text-white border border-purple-900/40 shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <span className={`font-semibold font-mono text-sm ${activeTab === 'rates' ? 'text-purple-400' : 'text-slate-400'}`}>₦</span>
-            <span>Rates & Assets</span>
-          </div>
-          <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 text-xs font-bold font-mono">
-            {tradeRatesCount}
-          </span>
-        </button>
-
-        {/* Nav 4: Affiliates & Ads Banner */}
-        <button
-          onClick={() => setActiveTab('affiliates')}
-          className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
-            activeTab === 'affiliates'
-              ? 'bg-[#1b1735] text-white border border-purple-900/40 shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <Megaphone className={`w-4 h-4 ${activeTab === 'affiliates' ? 'text-purple-400' : 'text-slate-400'}`} />
-            <span>Affiliates & Banner Ads</span>
-          </div>
-          <span className="px-2 py-0.5 rounded-full bg-purple-900 text-purple-200 text-xs font-bold font-mono">
-            {totalAffiliatesCount}
-          </span>
-        </button>
-      </div>
-
-      {onBackToSite && (
-        <div className="pt-4 border-t border-slate-800/60 mt-6 md:hidden">
-          <button
-            onClick={onBackToSite}
-            className="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Main Site</span>
-          </button>
-        </div>
-      )}
-    </nav>
-  );
-};
-
-// =========================================================================
-// HIGH UX MODALS WITH SIMPLE ENGLISH TOOLTIPS ON EVERY SINGLE FIELD
-// =========================================================================
-
-// 1. Asset & Rate Configuration Modal
+// Asset Config Modal
 const AssetConfigModal: React.FC<{
   asset: TradeRate | null;
   onClose: () => void;
@@ -1467,14 +1664,14 @@ const AssetConfigModal: React.FC<{
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-xl rounded-2xl bg-[#0f1224] border border-slate-700 shadow-2xl p-5 sm:p-6 space-y-5 sm:space-y-6 animate-scaleUp max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-xl rounded-2xl bg-[#0f1224] border border-slate-700 shadow-2xl p-6 space-y-6 animate-scaleUp max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <div>
-            <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
               <Coins className="w-5 h-5 text-purple-400" />
               {asset ? `Configure Asset: ${asset.asset}` : 'Add New Tradable Asset / Token'}
             </h3>
-            <p className="text-xs text-slate-400 mt-1 font-sans">
+            <p className="text-xs text-slate-400 mt-1">
               Add or adjust coins and gift cards supported on the LXchange converter.
             </p>
           </div>
@@ -1484,8 +1681,7 @@ const AssetConfigModal: React.FC<{
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-sm">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Category */}
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
                 <span>Asset Category</span>
@@ -1495,7 +1691,7 @@ const AssetConfigModal: React.FC<{
               </label>
               {activeTooltip === 'category' && (
                 <div className="p-2.5 rounded-xl bg-purple-950/90 border border-purple-800/80 text-purple-200 text-xs">
-                  Simple English: Choose if this item is a Cryptocurrency (e.g. BTC, USDT, SOL) or a Gift Card (e.g. iTunes, Steam).
+                  Simple English: Choose if this item is a Cryptocurrency (BTC, USDT, SOL) or a Gift Card (iTunes, Steam).
                 </div>
               )}
               <select
@@ -1508,12 +1704,11 @@ const AssetConfigModal: React.FC<{
                 }}
                 className="w-full px-3 py-2 rounded-xl bg-[#14182e] border border-slate-700 text-white font-medium focus:outline-none focus:border-purple-500"
               >
-                <option value="crypto">Cryptocurrency (BTC, USDT...)</option>
-                <option value="giftcard">Gift Card (iTunes, Steam...)</option>
+                <option value="crypto">Cryptocurrency (BTC, USDT, SOL...)</option>
+                <option value="giftcard">Gift Card (iTunes, Steam, Amazon...)</option>
               </select>
             </div>
 
-            {/* Asset Symbol / Name */}
             <div className="space-y-1">
               <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
                 <span>Asset Symbol / Name</span>
@@ -1537,7 +1732,6 @@ const AssetConfigModal: React.FC<{
             </div>
           </div>
 
-          {/* Network / Type */}
           <div className="space-y-1">
             <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
               <span>Network Protocol / Card Type</span>
@@ -1547,7 +1741,7 @@ const AssetConfigModal: React.FC<{
             </label>
             {activeTooltip === 'networkOrType' && (
               <div className="p-2.5 rounded-xl bg-purple-950/90 border border-purple-800/80 text-purple-200 text-xs">
-                Simple English: Specifies blockchain network (TRC20, ERC20, Solana) or gift card condition (Physical Card with Receipt, E-Code).
+                Simple English: Specifies blockchain network (TRC20, ERC20, Solana) or gift card condition.
               </div>
             )}
             {category === 'crypto' ? (
@@ -1576,14 +1770,12 @@ const AssetConfigModal: React.FC<{
             )}
           </div>
 
-          {/* Rates: Buy vs Sell */}
           <div className="p-4 rounded-xl bg-[#090b17] border border-slate-800 space-y-3">
-            <div className="text-xs font-bold text-purple-400 uppercase tracking-wider font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <div className="text-xs font-bold text-purple-400 uppercase tracking-wider font-mono flex items-center justify-between">
               <span>PRICING ENGINE RATES (IN NAIRA ₦)</span>
-              <span className="text-[10px] text-slate-400 font-normal">Controls frontend converter rates</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
                   <span>WE BUY AT (₦)</span>
@@ -1636,7 +1828,7 @@ const AssetConfigModal: React.FC<{
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
                 <span>Market Reference Price</span>
@@ -1667,7 +1859,7 @@ const AssetConfigModal: React.FC<{
               </label>
               {activeTooltip === 'status' && (
                 <div className="p-2 rounded-xl bg-purple-950/90 border border-purple-800/80 text-purple-200 text-[11px]">
-                  Simple English: Active makes asset available for trade on website. Paused disables it temporarily.
+                  Simple English: Active makes asset available for trade on website. Paused disables it.
                 </div>
               )}
               <select
@@ -1702,7 +1894,7 @@ const AssetConfigModal: React.FC<{
   );
 };
 
-// 2. VTU Pricing Rule Modal (Already enhanced with tooltips)
+// VTU Pricing Rule Modal
 const VTUPricingRuleModal: React.FC<{
   pricing: VTUPriceRow | null;
   onClose: () => void;
@@ -1741,14 +1933,14 @@ const VTUPricingRuleModal: React.FC<{
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-xl rounded-2xl bg-[#0f1224] border border-slate-700 shadow-2xl p-5 sm:p-6 space-y-5 sm:space-y-6 animate-scaleUp relative max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-xl rounded-2xl bg-[#0f1224] border border-slate-700 shadow-2xl p-6 space-y-6 animate-scaleUp relative max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <div>
-            <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2 font-sans">
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
               <Zap className="w-5 h-5 text-purple-400" />
               {pricing ? `Configure Rule: ${pricing.category}` : 'Add VTU Pricing & Margin Rule'}
             </h3>
-            <p className="text-xs text-slate-400 mt-1 font-sans">
+            <p className="text-xs text-slate-400 mt-1">
               Set provider costs, customer rates, and profit margins for digital top-ups.
             </p>
           </div>
@@ -1758,9 +1950,8 @@ const VTUPricingRuleModal: React.FC<{
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5 text-sm">
-          {/* FIELD 1: VTU CATEGORY */}
           <div className="space-y-1.5 relative">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+            <div className="flex items-center justify-between">
               <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
                 <span>1. VTU Service Category</span>
                 <button
@@ -1775,7 +1966,7 @@ const VTUPricingRuleModal: React.FC<{
               <button
                 type="button"
                 onClick={() => setIsCustomCategory(!isCustomCategory)}
-                className="text-xs text-purple-400 hover:text-purple-300 font-medium underline transition-colors cursor-pointer text-left"
+                className="text-xs text-purple-400 hover:text-purple-300 font-medium underline transition-colors cursor-pointer"
               >
                 {isCustomCategory ? 'Select Standard Category' : '+ Add Custom Category'}
               </button>
@@ -1783,7 +1974,7 @@ const VTUPricingRuleModal: React.FC<{
 
             {activeTooltip === 'category' && (
               <div className="p-3 rounded-xl bg-purple-950/90 border border-purple-800/80 text-purple-200 text-xs leading-relaxed animate-fadeIn">
-                <span className="font-bold text-purple-300">Simple English:</span> The type of digital service customers buy on LXchange (e.g. Airtime, Data, Cable TV, Betting Top-ups, Solar Power).
+                <span className="font-bold text-purple-300">Simple English:</span> The type of digital service customers buy on LXchange (Airtime, Data, Cable TV, Betting Top-ups, Solar Power).
               </div>
             )}
 
@@ -1806,7 +1997,7 @@ const VTUPricingRuleModal: React.FC<{
               <input
                 type="text"
                 required
-                placeholder="Enter custom category name (e.g. Solar WAEC PINs)"
+                placeholder="Enter custom category name (e.g. Solar Inverter Subscription, WAEC PINs)"
                 value={customCategory}
                 onChange={(e) => setCustomCategory(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-[#14182e] border border-purple-500 text-white font-bold focus:outline-none"
@@ -1814,7 +2005,6 @@ const VTUPricingRuleModal: React.FC<{
             )}
           </div>
 
-          {/* FIELD 2: PRICING MODEL */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
@@ -1833,7 +2023,7 @@ const VTUPricingRuleModal: React.FC<{
               <div className="p-3 rounded-xl bg-purple-950/90 border border-purple-800/80 text-purple-200 text-xs leading-relaxed animate-fadeIn">
                 <span className="font-bold text-purple-300">Simple English:</span> Defines how LXchange calculates profit:
                 <ul className="list-disc list-inside mt-1 space-y-0.5 text-[11px]">
-                  <li><b>Markup:</b> We add our profit on top of provider cost.</li>
+                  <li><b>Markup:</b> We add profit on top of provider cost.</li>
                   <li><b>Commission:</b> Provider discount rate off face value.</li>
                   <li><b>Commission+fee:</b> Provider discount + flat service fee.</li>
                 </ul>
@@ -1851,7 +2041,6 @@ const VTUPricingRuleModal: React.FC<{
             </select>
           </div>
 
-          {/* FIELD 3: PROVIDER BASE COST */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
@@ -1882,8 +2071,7 @@ const VTUPricingRuleModal: React.FC<{
             />
           </div>
 
-          {/* MARGIN & CUSTOMER PAYS */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
                 <span>4. Admin Margin Cut</span>
@@ -1940,15 +2128,15 @@ const VTUPricingRuleModal: React.FC<{
           </div>
 
           <div className="p-4 rounded-xl bg-[#090b17] border border-slate-800 space-y-2">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
                   <span>LIVE PROFIT CALCULATOR SUMMARY</span>
                 </div>
                 <div className="text-[11px] text-slate-400">Net revenue earned on each order in {finalCategoryName}</div>
               </div>
-              <div className="sm:text-right">
-                <div className="font-bold text-emerald-400 font-mono text-lg sm:text-xl">{youEarn}</div>
+              <div className="text-right">
+                <div className="font-bold text-emerald-400 font-mono text-xl">{youEarn}</div>
                 {earnPercent && <div className="text-[10px] text-emerald-500/80 font-mono">({earnPercent} net margin)</div>}
               </div>
             </div>
@@ -1975,7 +2163,7 @@ const VTUPricingRuleModal: React.FC<{
   );
 };
 
-// 3. Affiliate Partner Placement Modal
+// Affiliate Config Modal
 const AffiliateConfigModal: React.FC<{
   affiliate: PartnerLink | null;
   onClose: () => void;
@@ -2006,10 +2194,10 @@ const AffiliateConfigModal: React.FC<{
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-xl rounded-2xl bg-[#0f1224] border border-slate-700 shadow-2xl p-5 sm:p-6 space-y-5 sm:space-y-6 animate-scaleUp max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-xl rounded-2xl bg-[#0f1224] border border-slate-700 shadow-2xl p-6 space-y-6 animate-scaleUp max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <div>
-            <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
               <LinkIcon className="w-5 h-5 text-purple-400" />
               {affiliate ? `Edit Partner: ${affiliate.partner}` : 'Add New Affiliate Partner Link'}
             </h3>
@@ -2023,7 +2211,6 @@ const AffiliateConfigModal: React.FC<{
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-sm">
-          {/* Partner Name */}
           <div className="space-y-1">
             <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
               <span>Partner Brand & Product Name</span>
@@ -2033,7 +2220,7 @@ const AffiliateConfigModal: React.FC<{
             </label>
             {activeTooltip === 'partner' && (
               <div className="p-2.5 rounded-xl bg-purple-950/90 border border-purple-800/80 text-purple-200 text-xs">
-                Simple English: The name of the partner product (e.g. Ledger Hardware Wallet, Trezor, NordVPN).
+                Simple English: The name of the partner product (Ledger, Trezor, NordVPN).
               </div>
             )}
             <input
@@ -2046,8 +2233,7 @@ const AffiliateConfigModal: React.FC<{
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Placement */}
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
                 <span>Placement Location</span>
@@ -2073,7 +2259,6 @@ const AffiliateConfigModal: React.FC<{
               </select>
             </div>
 
-            {/* Status */}
             <div className="space-y-1">
               <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
                 <span>Link Status</span>
@@ -2097,7 +2282,6 @@ const AffiliateConfigModal: React.FC<{
             </div>
           </div>
 
-          {/* Target URL */}
           <div className="space-y-1">
             <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
               <span>Affiliate Target URL</span>
@@ -2107,7 +2291,7 @@ const AffiliateConfigModal: React.FC<{
             </label>
             {activeTooltip === 'targetUrl' && (
               <div className="p-2.5 rounded-xl bg-purple-950/90 border border-purple-800/80 text-purple-200 text-xs">
-                Simple English: The destination link containing your unique partner referral ID (e.g. https://ledger.com?aff=lxchange).
+                Simple English: The destination link containing your unique partner referral ID.
               </div>
             )}
             <input
@@ -2120,7 +2304,7 @@ const AffiliateConfigModal: React.FC<{
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
                 <span>Clicks Count (30D)</span>
@@ -2184,7 +2368,7 @@ const AffiliateConfigModal: React.FC<{
   );
 };
 
-// 4. Homepage Banner Ads Spotlight Modal (With Live Ad Card Preview & Tooltips)
+// 4. Homepage Banner Ad Modal
 const HomepageAdModal: React.FC<{
   ad: HomepageAd | null;
   onClose: () => void;
@@ -2227,15 +2411,15 @@ const HomepageAdModal: React.FC<{
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl rounded-2xl bg-[#0f1224] border border-slate-700 shadow-2xl p-5 sm:p-6 space-y-5 sm:space-y-6 animate-scaleUp max-h-[92vh] overflow-y-auto">
+      <div className="w-full max-w-2xl rounded-2xl bg-[#0f1224] border border-slate-700 shadow-2xl p-6 space-y-6 animate-scaleUp max-h-[92vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <div>
-            <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-amber-400" />
               {ad ? 'Edit Homepage Banner Ad' : 'Create New Homepage Banner Ad'}
             </h3>
             <p className="text-xs text-slate-400 mt-1">
-              Configure the promo ad card displayed in the homepage spotlight carousel.
+              Configure promo ad cards displayed on the homepage spotlight carousel.
             </p>
           </div>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
@@ -2243,13 +2427,13 @@ const HomepageAdModal: React.FC<{
           </button>
         </div>
 
-        {/* LIVE PREVIEW BOX OF THE BANNER AD */}
+        {/* Preview */}
         <div className="space-y-2">
           <label className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono flex items-center gap-1.5">
             <Eye className="w-3.5 h-3.5 text-purple-400" />
             LIVE HOMEPAGE BANNER PREVIEW
           </label>
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#111222] border border-slate-800 relative overflow-hidden shadow-xl space-y-3">
+          <div className="p-5 rounded-2xl bg-[#111222] border border-slate-800 relative overflow-hidden shadow-xl space-y-3">
             <div className="flex items-center justify-between">
               <span
                 className={`px-3 py-1 rounded-full text-xs font-bold font-mono border ${
@@ -2267,8 +2451,8 @@ const HomepageAdModal: React.FC<{
               <span className="text-[10px] text-slate-400 font-mono">SPOTLIGHT AD CAROUSEL</span>
             </div>
 
-            <h4 className="text-base sm:text-lg font-bold text-white leading-snug">{headline || 'Ad Headline Goes Here'}</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">{subtext || 'Ad subtext description details...'}</p>
+            <h4 className="text-lg font-bold text-white leading-snug">{headline || 'Ad Headline'}</h4>
+            <p className="text-xs text-slate-400 leading-relaxed">{subtext || 'Ad subtext description...'}</p>
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
               <div className="flex items-center gap-2 font-mono text-xs">
@@ -2302,8 +2486,7 @@ const HomepageAdModal: React.FC<{
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-sm pt-2">
-          {/* Tag & Accent */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
                 <span>Tag Badge Text</span>
@@ -2313,13 +2496,13 @@ const HomepageAdModal: React.FC<{
               </label>
               {activeTooltip === 'tag' && (
                 <div className="p-2.5 rounded-xl bg-purple-950/90 border border-purple-800/80 text-purple-200 text-xs">
-                  Simple English: Small pill tag shown on top of the ad (e.g. SPECIAL RATE, LIMITED OFFER, 50% OFF, NEW).
+                  Simple English: Small pill badge on top of the ad (SPECIAL RATE, LIMITED OFFER, 50% OFF).
                 </div>
               )}
               <input
                 type="text"
                 required
-                placeholder="e.g. SPECIAL RATE, LIMITED OFFER"
+                placeholder="SPECIAL RATE"
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
                 className="w-full px-3.5 py-2 rounded-xl bg-[#14182e] border border-slate-700 text-white font-mono text-xs focus:outline-none focus:border-purple-500 font-bold"
@@ -2351,7 +2534,6 @@ const HomepageAdModal: React.FC<{
             </div>
           </div>
 
-          {/* Headline */}
           <div className="space-y-1">
             <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
               <span>Main Ad Headline Title</span>
@@ -2374,7 +2556,6 @@ const HomepageAdModal: React.FC<{
             />
           </div>
 
-          {/* Subtext */}
           <div className="space-y-1">
             <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
               <span>Subtext / Description</span>
@@ -2384,7 +2565,7 @@ const HomepageAdModal: React.FC<{
             </label>
             {activeTooltip === 'subtext' && (
               <div className="p-2.5 rounded-xl bg-purple-950/90 border border-purple-800/80 text-purple-200 text-xs">
-                Simple English: 1-2 sentence description explaining the promotion details to visitors.
+                Simple English: 1-2 sentence description explaining promo details to visitors.
               </div>
             )}
             <textarea
@@ -2393,12 +2574,11 @@ const HomepageAdModal: React.FC<{
               placeholder="Trade USDT / NGN at a locked 1,575 rate with zero network fees all week."
               value={subtext}
               onChange={(e) => setSubtext(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-xl bg-[#14182e] border border-slate-700 text-white text-xs focus:outline-none focus:border-purple-500 font-sans"
+              className="w-full px-3.5 py-2 rounded-xl bg-[#14182e] border border-slate-700 text-white text-xs focus:outline-none focus:border-purple-500"
             />
           </div>
 
-          {/* CTA & Link */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
                 <span>CTA Button Text</span>
@@ -2408,7 +2588,7 @@ const HomepageAdModal: React.FC<{
               </label>
               {activeTooltip === 'cta' && (
                 <div className="p-2.5 rounded-xl bg-purple-950/90 border border-purple-800/80 text-purple-200 text-xs">
-                  Simple English: Label written on the action button (e.g. Start trading, Claim Offer, Get my link).
+                  Simple English: Label on the action button (Start trading, Claim Offer).
                 </div>
               )}
               <input
@@ -2430,7 +2610,7 @@ const HomepageAdModal: React.FC<{
               </label>
               {activeTooltip === 'targetUrl' && (
                 <div className="p-2.5 rounded-xl bg-purple-950/90 border border-purple-800/80 text-purple-200 text-xs">
-                  Simple English: Destination link when user clicks button (e.g. #trade, #earn, or external URL).
+                  Simple English: Destination link when user clicks button (#trade, #earn, or external URL).
                 </div>
               )}
               <input
@@ -2443,9 +2623,8 @@ const HomepageAdModal: React.FC<{
             </div>
           </div>
 
-          {/* Stat Badges */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-3.5 rounded-xl bg-[#090b17] border border-slate-800">
-            <div className="space-y-1 font-sans">
+          <div className="grid grid-cols-2 gap-4 p-3.5 rounded-xl bg-[#090b17] border border-slate-800">
+            <div className="space-y-1">
               <label className="text-[11px] text-slate-300 font-semibold">Stat Pill 1 (Label & Value)</label>
               <div className="flex gap-2">
                 <input
@@ -2465,7 +2644,7 @@ const HomepageAdModal: React.FC<{
               </div>
             </div>
 
-            <div className="space-y-1 font-sans">
+            <div className="space-y-1">
               <label className="text-[11px] text-slate-300 font-semibold">Stat Pill 2 (Label & Value)</label>
               <div className="flex gap-2">
                 <input
@@ -2486,7 +2665,7 @@ const HomepageAdModal: React.FC<{
             </div>
           </div>
 
-          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800 font-sans">
+          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
             <button
               type="button"
               onClick={onClose}
