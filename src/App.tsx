@@ -23,6 +23,7 @@ import { INITIAL_CRYPTO_ASSETS, ECOSYSTEM_PRODUCTS, YIELD_OPTIONS, PLATFORM_ADS 
 import { CryptoAsset, ProductService, YieldOption } from './types/crypto';
 
 import { AdminDashboard } from './components/AdminDashboard';
+import { StorePage } from './components/StorePage';
 
 interface ActiveTicket {
   ticketId: string;
@@ -106,8 +107,9 @@ export default function App() {
   const handleOpenQuickTrade = (assetSymbolOrCategory?: string) => {
     if (assetSymbolOrCategory) {
       const lower = assetSymbolOrCategory.toLowerCase();
-      if (lower.includes('gift')) {
-        handleOpenGetStarted('giftcard');
+      const storeKeywords = ['store', 'airtime', 'data', 'cable tv', 'gift cards', 'game credits', 'vouchers', 'game top-ups', 'game vouchers'];
+      if (storeKeywords.some((kw) => lower.includes(kw))) {
+        navigateTo('/store');
         return;
       }
 
@@ -158,6 +160,10 @@ export default function App() {
 
   if (currentPath.startsWith('/admin')) {
     return <AdminDashboard onBackToSite={() => navigateTo('/')} />;
+  }
+
+  if (currentPath.startsWith('/store')) {
+    return <StorePage onBackToExchange={() => navigateTo('/')} />;
   }
 
   return (

@@ -67,6 +67,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
             <a href="#markets" className="hover:text-purple-400 transition-colors">Markets</a>
             <a href="#trade" className="hover:text-purple-400 transition-colors">Trade</a>
+            <a href="/store" onClick={(e) => { e.preventDefault(); onOpenQuickTrade('store'); }} className="text-purple-300 font-semibold hover:text-purple-200 transition-colors flex items-center gap-1">
+              <span>Store</span>
+              <span className="px-1.5 py-0.2 rounded bg-purple-900/60 text-[10px] text-purple-300 border border-purple-700/50">NEW</span>
+            </a>
             <a href="#earn" className="hover:text-purple-400 transition-colors">Earn</a>
             <a href="#staking" className="hover:text-purple-400 transition-colors">Staking</a>
             <a href="#faq" className="hover:text-purple-400 transition-colors">Learn</a>
@@ -128,6 +132,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex flex-col gap-3 font-medium text-slate-300 text-base">
             <a href="#markets" onClick={() => setMobileMenuOpen(false)} className="py-1 hover:text-purple-400">Markets</a>
             <a href="#trade" onClick={() => setMobileMenuOpen(false)} className="py-1 hover:text-purple-400">Trade</a>
+            <a href="/store" onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); onOpenQuickTrade('store'); }} className="py-1 text-purple-300 font-semibold hover:text-purple-200">Digital Store</a>
             <a href="#earn" onClick={() => setMobileMenuOpen(false)} className="py-1 hover:text-purple-400">Earn</a>
             <a href="#staking" onClick={() => setMobileMenuOpen(false)} className="py-1 hover:text-purple-400">Staking</a>
             <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="py-1 hover:text-purple-400">Learn / FAQ</a>

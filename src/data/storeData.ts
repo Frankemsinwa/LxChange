@@ -1,0 +1,490 @@
+export interface StoreProduct {
+  id: string;
+  name: string;
+  subtext: string;
+  price: number; // NGN
+  faceValue?: number; // NGN
+  discountPercent?: number;
+  badge?: string;
+  unit?: string;
+}
+
+export interface StoreProvider {
+  id: string;
+  name: string;
+  shortName: string;
+  logoColor: string;
+  badgeBg: string;
+  badgeText: string;
+  iconLetter: string;
+  inputType: 'phone' | 'smartcard' | 'account' | 'email' | 'player_id';
+  inputLabel: string;
+  inputPlaceholder: string;
+}
+
+export interface StoreCategory {
+  id: string;
+  name: string;
+  subtitle: string;
+  footerNote: string;
+  providers: StoreProvider[];
+}
+
+export const STORE_CATEGORIES: StoreCategory[] = [
+  {
+    id: 'airtime',
+    name: 'Airtime',
+    subtitle: 'Instant airtime top-up across all networks at discounted rates.',
+    footerNote: 'Airtime is face value less 2% — the discount is yours.',
+    providers: [
+      {
+        id: 'mtn',
+        name: 'MTN',
+        shortName: 'MTN',
+        logoColor: '#FFCC00',
+        badgeBg: 'bg-amber-400',
+        badgeText: 'text-slate-950 font-bold',
+        iconLetter: 'MTN',
+        inputType: 'phone',
+        inputLabel: 'PHONE NUMBER',
+        inputPlaceholder: 'e.g. 08031234567',
+      },
+      {
+        id: 'glo',
+        name: 'Glo',
+        shortName: 'Glo',
+        logoColor: '#00A859',
+        badgeBg: 'bg-emerald-500',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'glo',
+        inputType: 'phone',
+        inputLabel: 'PHONE NUMBER',
+        inputPlaceholder: 'e.g. 08051234567',
+      },
+      {
+        id: 'airtel',
+        name: 'Airtel',
+        shortName: 'Airtel',
+        logoColor: '#FF0000',
+        badgeBg: 'bg-red-600',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'art',
+        inputType: 'phone',
+        inputLabel: 'PHONE NUMBER',
+        inputPlaceholder: 'e.g. 08021234567',
+      },
+      {
+        id: '9mobile',
+        name: '9mobile',
+        shortName: '9mobile',
+        logoColor: '#005C42',
+        badgeBg: 'bg-teal-700',
+        badgeText: 'text-white font-bold',
+        iconLetter: '9m',
+        inputType: 'phone',
+        inputLabel: 'PHONE NUMBER',
+        inputPlaceholder: 'e.g. 08091234567',
+      },
+    ],
+  },
+  {
+    id: 'data',
+    name: 'Data',
+    subtitle: 'High-speed internet data bundles for all local networks.',
+    footerNote: 'Direct and SME bundles on every network.',
+    providers: [
+      {
+        id: 'mtn',
+        name: 'MTN',
+        shortName: 'MTN',
+        logoColor: '#FFCC00',
+        badgeBg: 'bg-amber-400',
+        badgeText: 'text-slate-950 font-bold',
+        iconLetter: 'MTN',
+        inputType: 'phone',
+        inputLabel: 'PHONE NUMBER',
+        inputPlaceholder: 'e.g. 08031234567',
+      },
+      {
+        id: 'glo',
+        name: 'Glo',
+        shortName: 'Glo',
+        logoColor: '#00A859',
+        badgeBg: 'bg-emerald-500',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'glo',
+        inputType: 'phone',
+        inputLabel: 'PHONE NUMBER',
+        inputPlaceholder: 'e.g. 08051234567',
+      },
+      {
+        id: 'airtel',
+        name: 'Airtel',
+        shortName: 'Airtel',
+        logoColor: '#FF0000',
+        badgeBg: 'bg-red-600',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'art',
+        inputType: 'phone',
+        inputLabel: 'PHONE NUMBER',
+        inputPlaceholder: 'e.g. 08021234567',
+      },
+      {
+        id: '9mobile',
+        name: '9mobile',
+        shortName: '9mobile',
+        logoColor: '#005C42',
+        badgeBg: 'bg-teal-700',
+        badgeText: 'text-white font-bold',
+        iconLetter: '9m',
+        inputType: 'phone',
+        inputLabel: 'PHONE NUMBER',
+        inputPlaceholder: 'e.g. 08091234567',
+      },
+    ],
+  },
+  {
+    id: 'cable-tv',
+    name: 'Cable TV',
+    subtitle: 'Instant TV subscription renewal for DSTV, GOtv and Startimes.',
+    footerNote: 'Renew before the match starts.',
+    providers: [
+      {
+        id: 'dstv',
+        name: 'DSTV',
+        shortName: 'DSTV',
+        logoColor: '#0084CA',
+        badgeBg: 'bg-sky-600',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'DS',
+        inputType: 'smartcard',
+        inputLabel: 'SMARTCARD / IUC NUMBER',
+        inputPlaceholder: 'e.g. 1029384756',
+      },
+      {
+        id: 'gotv',
+        name: 'GOtv',
+        shortName: 'GOtv',
+        logoColor: '#4CAF50',
+        badgeBg: 'bg-green-600',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'GO',
+        inputType: 'smartcard',
+        inputLabel: 'IUC NUMBER',
+        inputPlaceholder: 'e.g. 2019283746',
+      },
+      {
+        id: 'startimes',
+        name: 'Startimes',
+        shortName: 'Startimes',
+        logoColor: '#FF9800',
+        badgeBg: 'bg-amber-600',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'ST',
+        inputType: 'smartcard',
+        inputLabel: 'SMARTCARD NUMBER',
+        inputPlaceholder: 'e.g. 0192837465',
+      },
+    ],
+  },
+  {
+    id: 'gift-cards',
+    name: 'Gift cards',
+    subtitle: 'Buy global digital gift cards paid directly in NGN.',
+    footerNote: 'Codes delivered immediately via email & dashboard.',
+    providers: [
+      {
+        id: 'amazon',
+        name: 'Amazon',
+        shortName: 'Amazon',
+        logoColor: '#FF9900',
+        badgeBg: 'bg-amber-500',
+        badgeText: 'text-slate-950 font-bold',
+        iconLetter: 'AMZ',
+        inputType: 'email',
+        inputLabel: 'DELIVERY EMAIL',
+        inputPlaceholder: 'e.g. buyer@example.com',
+      },
+      {
+        id: 'google-play',
+        name: 'Google Play',
+        shortName: 'Google Play',
+        logoColor: '#4185F4',
+        badgeBg: 'bg-blue-600',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'PLAY',
+        inputType: 'email',
+        inputLabel: 'DELIVERY EMAIL',
+        inputPlaceholder: 'e.g. buyer@example.com',
+      },
+      {
+        id: 'itunes',
+        name: 'iTunes / Apple',
+        shortName: 'iTunes',
+        logoColor: '#FA243C',
+        badgeBg: 'bg-pink-600',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'AAPL',
+        inputType: 'email',
+        inputLabel: 'DELIVERY EMAIL',
+        inputPlaceholder: 'e.g. buyer@example.com',
+      },
+      {
+        id: 'netflix',
+        name: 'Netflix',
+        shortName: 'Netflix',
+        logoColor: '#E50914',
+        badgeBg: 'bg-red-700',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'NFLX',
+        inputType: 'email',
+        inputLabel: 'DELIVERY EMAIL',
+        inputPlaceholder: 'e.g. buyer@example.com',
+      },
+    ],
+  },
+  {
+    id: 'game-topups',
+    name: 'Game top-ups',
+    subtitle: 'Direct in-game currency top-ups for popular mobile & PC titles.',
+    footerNote: 'Instant credit to player ID after payment.',
+    providers: [
+      {
+        id: 'codm',
+        name: 'Call of Duty Mobile',
+        shortName: 'CODM',
+        logoColor: '#D97706',
+        badgeBg: 'bg-amber-700',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'COD',
+        inputType: 'player_id',
+        inputLabel: 'PLAYER ID / UID',
+        inputPlaceholder: 'e.g. 67483920192',
+      },
+      {
+        id: 'freefire',
+        name: 'Free Fire',
+        shortName: 'Free Fire',
+        logoColor: '#EF4444',
+        badgeBg: 'bg-red-500',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'FF',
+        inputType: 'player_id',
+        inputLabel: 'PLAYER ID',
+        inputPlaceholder: 'e.g. 987654321',
+      },
+      {
+        id: 'pubg',
+        name: 'PUBG Mobile',
+        shortName: 'PUBG',
+        logoColor: '#EAB308',
+        badgeBg: 'bg-yellow-500',
+        badgeText: 'text-slate-950 font-bold',
+        iconLetter: 'PUBG',
+        inputType: 'player_id',
+        inputLabel: 'CHARACTER ID',
+        inputPlaceholder: 'e.g. 5123456789',
+      },
+    ],
+  },
+  {
+    id: 'game-vouchers',
+    name: 'Game vouchers',
+    subtitle: 'Digital game ecosystem vouchers & store wallet funds.',
+    footerNote: 'Voucher codes sent instantly to email.',
+    providers: [
+      {
+        id: 'playstation',
+        name: 'PlayStation Store',
+        shortName: 'PlayStation',
+        logoColor: '#003791',
+        badgeBg: 'bg-blue-800',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'PS',
+        inputType: 'email',
+        inputLabel: 'RECEIVING EMAIL',
+        inputPlaceholder: 'e.g. gamer@example.com',
+      },
+      {
+        id: 'razer-gold',
+        name: 'Razer Gold',
+        shortName: 'Razer Gold',
+        logoColor: '#25D366',
+        badgeBg: 'bg-emerald-600',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'RZ',
+        inputType: 'email',
+        inputLabel: 'RECEIVING EMAIL',
+        inputPlaceholder: 'e.g. gamer@example.com',
+      },
+      {
+        id: 'steam',
+        name: 'Steam Wallet',
+        shortName: 'Steam',
+        logoColor: '#171A21',
+        badgeBg: 'bg-slate-800',
+        badgeText: 'text-white font-bold',
+        iconLetter: 'STM',
+        inputType: 'email',
+        inputLabel: 'RECEIVING EMAIL',
+        inputPlaceholder: 'e.g. gamer@example.com',
+      },
+    ],
+  },
+];
+
+export const STORE_PRODUCTS_MAP: Record<string, Record<string, StoreProduct[]>> = {
+  airtime: {
+    mtn: [
+      { id: 'airtime-mtn-100', name: '₦100', subtext: 'MTN · face value', price: 98, faceValue: 100, discountPercent: 2 },
+      { id: 'airtime-mtn-200', name: '₦200', subtext: 'MTN · face value', price: 196, faceValue: 200, discountPercent: 2 },
+      { id: 'airtime-mtn-500', name: '₦500', subtext: 'MTN · face value', price: 490, faceValue: 500, discountPercent: 2 },
+      { id: 'airtime-mtn-1000', name: '₦1,000', subtext: 'MTN · face value', price: 980, faceValue: 1000, discountPercent: 2 },
+      { id: 'airtime-mtn-2000', name: '₦2,000', subtext: 'MTN · face value', price: 1960, faceValue: 2000, discountPercent: 2 },
+      { id: 'airtime-mtn-5000', name: '₦5,000', subtext: 'MTN · face value', price: 4900, faceValue: 5000, discountPercent: 2 },
+    ],
+    glo: [
+      { id: 'airtime-glo-100', name: '₦100', subtext: 'Glo · face value', price: 98, faceValue: 100, discountPercent: 2 },
+      { id: 'airtime-glo-200', name: '₦200', subtext: 'Glo · face value', price: 196, faceValue: 200, discountPercent: 2 },
+      { id: 'airtime-glo-500', name: '₦500', subtext: 'Glo · face value', price: 490, faceValue: 500, discountPercent: 2 },
+      { id: 'airtime-glo-1000', name: '₦1,000', subtext: 'Glo · face value', price: 980, faceValue: 1000, discountPercent: 2 },
+      { id: 'airtime-glo-2000', name: '₦2,000', subtext: 'Glo · face value', price: 1960, faceValue: 2000, discountPercent: 2 },
+      { id: 'airtime-glo-5000', name: '₦5,000', subtext: 'Glo · face value', price: 4900, faceValue: 5000, discountPercent: 2 },
+    ],
+    airtel: [
+      { id: 'airtime-airtel-100', name: '₦100', subtext: 'Airtel · face value', price: 98, faceValue: 100, discountPercent: 2 },
+      { id: 'airtime-airtel-200', name: '₦200', subtext: 'Airtel · face value', price: 196, faceValue: 200, discountPercent: 2 },
+      { id: 'airtime-airtel-500', name: '₦500', subtext: 'Airtel · face value', price: 490, faceValue: 500, discountPercent: 2 },
+      { id: 'airtime-airtel-1000', name: '₦1,000', subtext: 'Airtel · face value', price: 980, faceValue: 1000, discountPercent: 2 },
+      { id: 'airtime-airtel-2000', name: '₦2,000', subtext: 'Airtel · face value', price: 1960, faceValue: 2000, discountPercent: 2 },
+      { id: 'airtime-airtel-5000', name: '₦5,000', subtext: 'Airtel · face value', price: 4900, faceValue: 5000, discountPercent: 2 },
+    ],
+    '9mobile': [
+      { id: 'airtime-9m-100', name: '₦100', subtext: '9mobile · face value', price: 98, faceValue: 100, discountPercent: 2 },
+      { id: 'airtime-9m-200', name: '₦200', subtext: '9mobile · face value', price: 196, faceValue: 200, discountPercent: 2 },
+      { id: 'airtime-9m-500', name: '₦500', subtext: '9mobile · face value', price: 490, faceValue: 500, discountPercent: 2 },
+      { id: 'airtime-9m-1000', name: '₦1,000', subtext: '9mobile · face value', price: 980, faceValue: 1000, discountPercent: 2 },
+      { id: 'airtime-9m-2000', name: '₦2,000', subtext: '9mobile · face value', price: 1960, faceValue: 2000, discountPercent: 2 },
+      { id: 'airtime-9m-5000', name: '₦5,000', subtext: '9mobile · face value', price: 4900, faceValue: 5000, discountPercent: 2 },
+    ],
+  },
+  data: {
+    mtn: [
+      { id: 'data-mtn-1gb', name: '1GB', subtext: '30 days', price: 550 },
+      { id: 'data-mtn-2gb', name: '2GB', subtext: '30 days', price: 1100 },
+      { id: 'data-mtn-3.5gb', name: '3.5GB', subtext: '30 days', price: 1800 },
+      { id: 'data-mtn-10gb', name: '10GB', subtext: '30 days', price: 5500 },
+      { id: 'data-mtn-20gb', name: '20GB', subtext: '30 days', price: 11000 },
+    ],
+    glo: [
+      { id: 'data-glo-1.25gb', name: '1.25GB', subtext: '30 days', price: 500 },
+      { id: 'data-glo-2.5gb', name: '2.5GB', subtext: '30 days', price: 1000 },
+      { id: 'data-glo-5.8gb', name: '5.8GB', subtext: '30 days', price: 2000 },
+      { id: 'data-glo-12gb', name: '12GB', subtext: '30 days', price: 4000 },
+      { id: 'data-glo-20gb', name: '20GB', subtext: '30 days', price: 8000 },
+    ],
+    airtel: [
+      { id: 'data-airtel-1.5gb', name: '1.5GB', subtext: '30 days', price: 1000 },
+      { id: 'data-airtel-3gb', name: '3GB', subtext: '30 days', price: 1500 },
+      { id: 'data-airtel-4.5gb', name: '4.5GB', subtext: '30 days', price: 2000 },
+      { id: 'data-airtel-10gb', name: '10GB', subtext: '30 days', price: 3000 },
+      { id: 'data-airtel-20gb', name: '20GB', subtext: '30 days', price: 5000 },
+    ],
+    '9mobile': [
+      { id: 'data-9m-1gb', name: '1GB', subtext: '30 days', price: 1000 },
+      { id: 'data-9m-2.5gb', name: '2.5GB', subtext: '30 days', price: 2000 },
+      { id: 'data-9m-4.5gb', name: '4.5GB', subtext: '30 days', price: 3000 },
+      { id: 'data-9m-11gb', name: '11GB', subtext: '30 days', price: 4000 },
+      { id: 'data-9m-15gb', name: '15GB', subtext: '30 days', price: 5000 },
+    ],
+  },
+  'cable-tv': {
+    dstv: [
+      { id: 'cable-dstv-padi', name: 'Padi', subtext: '1 month', price: 4400 },
+      { id: 'cable-dstv-yanga', name: 'Yanga', subtext: '1 month', price: 6000 },
+      { id: 'cable-dstv-compact', name: 'Compact', subtext: '1 month', price: 19000 },
+      { id: 'cable-dstv-compactplus', name: 'Compact+', subtext: '1 month', price: 30000 },
+      { id: 'cable-dstv-premium', name: 'Premium', subtext: '1 month', price: 44500 },
+    ],
+    gotv: [
+      { id: 'cable-gotv-smallie', name: 'Smallie', subtext: '1 month', price: 1500 },
+      { id: 'cable-gotv-jinja', name: 'Jinja', subtext: '1 month', price: 3300 },
+      { id: 'cable-gotv-jolli', name: 'Jolli', subtext: '1 month', price: 4850 },
+      { id: 'cable-gotv-max', name: 'Max', subtext: '1 month', price: 7200 },
+      { id: 'cable-gotv-supa', name: 'Supa', subtext: '1 month', price: 10500 },
+    ],
+    startimes: [
+      { id: 'cable-st-nova', name: 'Nova', subtext: '1 month', price: 1500 },
+      { id: 'cable-st-basic', name: 'Basic', subtext: '1 month', price: 3000 },
+      { id: 'cable-st-smart', name: 'Smart', subtext: '1 month', price: 4200 },
+      { id: 'cable-st-classic', name: 'Classic', subtext: '1 month', price: 5000 },
+      { id: 'cable-st-super', name: 'Super', subtext: '1 month', price: 9000 },
+    ],
+  },
+  'gift-cards': {
+    amazon: [
+      { id: 'gc-amz-10', name: '$10 Gift Card', subtext: 'US Region Digital Code', price: 15800 },
+      { id: 'gc-amz-25', name: '$25 Gift Card', subtext: 'US Region Digital Code', price: 39500 },
+      { id: 'gc-amz-50', name: '$50 Gift Card', subtext: 'US Region Digital Code', price: 79000 },
+      { id: 'gc-amz-100', name: '$100 Gift Card', subtext: 'US Region Digital Code', price: 158000 },
+    ],
+    'google-play': [
+      { id: 'gc-play-10', name: '$10 Gift Card', subtext: 'US Store Code', price: 15800 },
+      { id: 'gc-play-25', name: '$25 Gift Card', subtext: 'US Store Code', price: 39500 },
+      { id: 'gc-play-50', name: '$50 Gift Card', subtext: 'US Store Code', price: 79000 },
+      { id: 'gc-play-100', name: '$100 Gift Card', subtext: 'US Store Code', price: 158000 },
+    ],
+    itunes: [
+      { id: 'gc-itunes-10', name: '$10 Apple Card', subtext: 'App Store & iTunes', price: 15800 },
+      { id: 'gc-itunes-25', name: '$25 Apple Card', subtext: 'App Store & iTunes', price: 39500 },
+      { id: 'gc-itunes-50', name: '$50 Apple Card', subtext: 'App Store & iTunes', price: 79000 },
+      { id: 'gc-itunes-100', name: '$100 Apple Card', subtext: 'App Store & iTunes', price: 158000 },
+    ],
+    netflix: [
+      { id: 'gc-nflx-15', name: '$15 Subscription Code', subtext: 'Global Account', price: 23700 },
+      { id: 'gc-nflx-30', name: '$30 Subscription Code', subtext: 'Global Account', price: 47400 },
+      { id: 'gc-nflx-60', name: '$60 Subscription Code', subtext: 'Global Account', price: 94800 },
+    ],
+  },
+  'game-topups': {
+    codm: [
+      { id: 'game-codm-80', name: '80 CP', subtext: 'Call of Duty Points', price: 1600 },
+      { id: 'game-codm-420', name: '420 CP', subtext: 'Call of Duty Points', price: 8000 },
+      { id: 'game-codm-880', name: '880 CP', subtext: 'Call of Duty Points', price: 16500 },
+      { id: 'game-codm-2400', name: '2400 CP', subtext: 'Call of Duty Points', price: 42000 },
+      { id: 'game-codm-5000', name: '5000 CP', subtext: 'Call of Duty Points', price: 85000 },
+    ],
+    freefire: [
+      { id: 'game-ff-100', name: '100 Diamonds', subtext: 'Free Fire Direct Credit', price: 1400 },
+      { id: 'game-ff-310', name: '310 Diamonds', subtext: 'Free Fire Direct Credit', price: 4200 },
+      { id: 'game-ff-520', name: '520 Diamonds', subtext: 'Free Fire Direct Credit', price: 7000 },
+      { id: 'game-ff-1060', name: '1060 Diamonds', subtext: 'Free Fire Direct Credit', price: 14000 },
+    ],
+    pubg: [
+      { id: 'game-pubg-60', name: '60 UC', subtext: 'Unknown Cash', price: 1500 },
+      { id: 'game-pubg-325', name: '325 UC', subtext: 'Unknown Cash', price: 7800 },
+      { id: 'game-pubg-660', name: '660 UC', subtext: 'Unknown Cash', price: 15500 },
+      { id: 'game-pubg-1800', name: '1800 UC', subtext: 'Unknown Cash', price: 41000 },
+    ],
+  },
+  'game-vouchers': {
+    playstation: [
+      { id: 'voucher-ps-10', name: '$10 PSN Card', subtext: 'US PlayStation Store', price: 15800 },
+      { id: 'voucher-ps-25', name: '$25 PSN Card', subtext: 'US PlayStation Store', price: 39500 },
+      { id: 'voucher-ps-50', name: '$50 PSN Card', subtext: 'US PlayStation Store', price: 79000 },
+      { id: 'voucher-ps-100', name: '$100 PSN Card', subtext: 'US PlayStation Store', price: 158000 },
+    ],
+    'razer-gold': [
+      { id: 'voucher-rz-5', name: '$5 Razer Gold', subtext: 'Global Pin Code', price: 7900 },
+      { id: 'voucher-rz-10', name: '$10 Razer Gold', subtext: 'Global Pin Code', price: 15800 },
+      { id: 'voucher-rz-20', name: '$20 Razer Gold', subtext: 'Global Pin Code', price: 31600 },
+      { id: 'voucher-rz-50', name: '$50 Razer Gold', subtext: 'Global Pin Code', price: 79000 },
+    ],
+    steam: [
+      { id: 'voucher-steam-10', name: '$10 Wallet Code', subtext: 'Global Steam Key', price: 15800 },
+      { id: 'voucher-steam-20', name: '$20 Wallet Code', subtext: 'Global Steam Key', price: 31600 },
+      { id: 'voucher-steam-50', name: '$50 Wallet Code', subtext: 'Global Steam Key', price: 79000 },
+      { id: 'voucher-steam-100', name: '$100 Wallet Code', subtext: 'Global Steam Key', price: 158000 },
+    ],
+  },
+};
