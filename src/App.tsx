@@ -67,6 +67,7 @@ export default function App() {
   // Get Started Flow Overlay State
   const [getStartedOpen, setGetStartedOpen] = useState(false);
   const [getStartedType, setGetStartedType] = useState<'crypto' | 'giftcard'>('crypto');
+  const [getStartedDirection, setGetStartedDirection] = useState<'buy' | 'sell'>('sell');
 
   // Trade Desk Live Chat Overlay State
   const [chatDeskOpen, setChatDeskOpen] = useState(false);
@@ -99,8 +100,9 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleOpenGetStarted = (type: 'crypto' | 'giftcard' = 'crypto') => {
+  const handleOpenGetStarted = (type: 'crypto' | 'giftcard' = 'crypto', direction: 'buy' | 'sell' = 'sell') => {
     setGetStartedType(type);
+    setGetStartedDirection(direction);
     setGetStartedOpen(true);
   };
 
@@ -256,6 +258,7 @@ export default function App() {
         onClose={() => setGetStartedOpen(false)}
         assets={assets}
         initialType={getStartedType}
+        initialDirection={getStartedDirection}
         onOpenLiveChat={handleOpenLiveChatFromTicket}
       />
 

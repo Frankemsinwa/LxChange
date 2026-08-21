@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, CheckCircle2, ArrowRight, ArrowLeft, Shield, DollarSign, Gift, Upload, Building2, CreditCard, Coins } from 'lucide-react';
+import { X, CheckCircle2, ArrowRight, ArrowLeft, Shield, DollarSign, Gift, Upload, Building2, CreditCard, Coins, Copy, Check } from 'lucide-react';
 import { CryptoAsset } from '../types/crypto';
 
 interface GetStartedModalProps {
@@ -8,6 +8,7 @@ interface GetStartedModalProps {
   assets: CryptoAsset[];
   onOpenLiveChat: (ticketDetails?: { ticketId: string; tradeSummary: string; email: string }) => void;
   initialType?: 'crypto' | 'giftcard';
+  initialDirection?: 'buy' | 'sell';
 }
 
 export const GetStartedModal: React.FC<GetStartedModalProps> = ({
@@ -16,9 +17,11 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
   assets,
   onOpenLiveChat,
   initialType = 'crypto',
+  initialDirection = 'sell',
 }) => {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [tradeType, setTradeType] = useState<'crypto' | 'giftcard'>(initialType);
+  const [tradeDirection, setTradeDirection] = useState<'buy' | 'sell'>(initialDirection);
 
   // Step 1 - Trade Asset Details
   const [selectedAssetSymbol, setSelectedAssetSymbol] = useState<string>('USDT');
@@ -34,7 +37,11 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
   const [cardPhotoName, setCardPhotoName] = useState<string>('');
   const [receiptPhotoName, setReceiptPhotoName] = useState<string>('');
 
-  // Step 2 - Customer Contact & Bank Details
+  // Step 1 - Buy Gift Card specific
+  const [cardDenomination, setCardDenomination] = useState<string>('');
+  const [cardQuantity, setCardQuantity] = useState<string>('1');
+
+  // Step 2 - Contact info (both flows)
   const [fullName, setFullName] = useState<string>('');
   const [whatsapp, setWhatsapp] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -42,8 +49,19 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
   const [accountNumber, setAccountNumber] = useState<string>('');
   const [accountName, setAccountName] = useState<string>('');
 
+  // Step 2 - Proof of payment (buy flows)
+  const [proofFileName, setProofFileName] = useState<string>('');
+
   // Step 3 - Ticket
   const [generatedTicketId, setGeneratedTicketId] = useState<string>('LX-2704');
+  const [copied, setCopied] = useState(false);
+
+  // LXchange receiving details (hardcoded for now)
+  const lxchangeBank = {
+    bank: 'Guaranty Trust Bank (GTBank)',
+    accountNumber: '0123456789',
+    accountName: 'LXchange Digital Services Ltd',
+  };
 
   if (!isOpen) return null;
 
@@ -53,22 +71,35 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
   const estimatedCryptoNgn = Math.round(parsedCryptoAmount * currentAsset.ngnPrice);
 
   const parsedCardUsd = parseFloat(cardValueUsd) || 0;
-  // Estimated gift card rate ~ ₦1,280 per USD
-  const estimatedGiftCardNgn = Math.round(parsedCardUsd * 1280);
+  const parsedQuantity = parseInt(cardQuantity) || 1;
+  const parsedDenomination = parseFloat(cardDenomination) || 0;
+  const totalGiftCardUsd = tradeDirection === 'buy' && parsedDenomination > 0
+    ? parsedDenomination * parsedQuantity
+    : parsedCardUsd;
+  const estimatedGiftCardNgn = Math.round(totalGiftCardUsd * 1280);
 
   const estimatedPayoutFormatted =
     tradeType === 'crypto'
       ? parsedCryptoAmount > 0
         ? `₦${estimatedCryptoNgn.toLocaleString()}`
         : '—'
-      : parsedCardUsd > 0
+      : totalGiftCardUsd > 0
       ? `₦${estimatedGiftCardNgn.toLocaleString()}`
       : '—';
 
-  const tradeSummaryString =
-    tradeType === 'crypto'
-      ? `Selling ${parsedCryptoAmount} ${selectedAssetSymbol} (${cryptoNetwork}) · est. ₦${estimatedCryptoNgn.toLocaleString()}`
-      : `Selling $${parsedCardUsd} ${cardBrand} (${cardCondition}) · est. ₦${estimatedGiftCardNgn.toLocaleString()}`;
+  const isSell = tradeDirection === 'sell';
+  const isBuy = tradeDirection === 'buy';
+  const isCrypto = tradeType === 'crypto';
+  const isGiftcard = tradeType === 'giftcard';
+
+  const step1Title = isSell ? 'Start a trade' : 'Buy Asset';
+  const step1Subtitle = isSell
+    ? 'Select your asset details below. Locked rate & fast payout guaranteed.'
+    : 'Select what you want to buy. Fast delivery guaranteed.';
+
+  const tradeSummaryString = isCrypto
+    ? `${isSell ? 'Selling' : 'Buying'} ${parsedCryptoAmount} ${selectedAssetSymbol} (${cryptoNetwork}) · est. ₦${estimatedCryptoNgn.toLocaleString()}`
+    : `${isSell ? 'Selling' : 'Buying'} $${totalGiftCardUsd} ${cardBrand} ${isBuy ? `(${parsedQuantity}×$${parsedDenomination || cardValueUsd})` : `(${cardCondition})`} · est. ₦${estimatedGiftCardNgn.toLocaleString()}`;
 
   const handleStep1Submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,6 +128,12 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
     onClose();
   };
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
       <div className="w-full max-w-[500px] rounded-3xl bg-[#0e0f1d] border border-purple-500/30 p-6 sm:p-8 relative shadow-2xl text-slate-100 glow-purple max-h-[92vh] overflow-y-auto">
@@ -113,11 +150,39 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
           <form onSubmit={handleStep1Submit} className="space-y-6">
             <div>
               <h2 className="font-heading text-2xl font-bold text-white tracking-tight">
-                Start a trade
+                {step1Title}
               </h2>
               <p className="text-xs text-slate-400 mt-1">
-                Select your asset details below. Locked rate & fast payout guaranteed.
+                {step1Subtitle}
               </p>
+            </div>
+
+            {/* Buy / Sell Direction Toggle */}
+            <div className="grid grid-cols-2 gap-3 p-1 rounded-2xl bg-[#090a14] border border-slate-800">
+              <button
+                type="button"
+                onClick={() => setTradeDirection('sell')}
+                className={`py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  tradeDirection === 'sell'
+                    ? 'bg-red-500/15 text-red-400 border border-red-500/50 shadow-md'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <ArrowRight className="w-4 h-4" />
+                <span>Sell</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setTradeDirection('buy')}
+                className={`py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  tradeDirection === 'buy'
+                    ? 'bg-blue-500/15 text-blue-400 border border-blue-500/50 shadow-md'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Buy</span>
+              </button>
             </div>
 
             {/* Progress Bar */}
@@ -155,7 +220,8 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
             </div>
 
             {/* Tab Form Content */}
-            {tradeType === 'crypto' ? (
+            {/* ─── SELL CRYPTO ─── */}
+            {isCrypto && isSell && (
               <div className="space-y-4 text-xs">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -221,7 +287,72 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
                   />
                 </div>
               </div>
-            ) : (
+            )}
+
+            {/* ─── BUY CRYPTO ─── */}
+            {isCrypto && isBuy && (
+              <div className="space-y-4 text-xs">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] font-bold tracking-wider text-blue-300 uppercase block mb-1">
+                      CRYPTO ASSET *
+                    </label>
+                    <select
+                      value={selectedAssetSymbol}
+                      onChange={(e) => setSelectedAssetSymbol(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#090a14] border border-slate-800 text-xs font-bold text-white focus:outline-none focus:border-purple-500 cursor-pointer"
+                    >
+                      {assets.map((asset) => (
+                        <option key={asset.id} value={asset.symbol}>
+                          {asset.symbol} - {asset.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold tracking-wider text-blue-300 uppercase block mb-1">
+                      AMOUNT TO BUY *
+                    </label>
+                    <input
+                      type="number"
+                      step="any"
+                      required
+                      value={cryptoAmount}
+                      onChange={(e) => setCryptoAmount(e.target.value)}
+                      placeholder="e.g. 100"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#090a14] border border-slate-800 text-xs font-mono font-bold text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold tracking-wider text-blue-300 uppercase block mb-1">
+                    BLOCKCHAIN NETWORK PROTOCOL *
+                  </label>
+                  <select
+                    value={cryptoNetwork}
+                    onChange={(e) => setCryptoNetwork(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#090a14] border border-slate-800 text-xs font-mono font-bold text-white focus:outline-none focus:border-purple-500 cursor-pointer"
+                  >
+                    <option value="TRC20 (Tron Network)">TRC20 (Tron Network - Low Fee)</option>
+                    <option value="BEP20 (BNB Smart Chain)">BEP20 (BNB Smart Chain)</option>
+                    <option value="Solana Network">Solana Mainnet (SPL)</option>
+                    <option value="Native Bitcoin Network">Native Bitcoin Network</option>
+                    <option value="ERC20 (Ethereum Mainnet)">ERC20 (Ethereum Mainnet)</option>
+                  </select>
+                </div>
+
+                <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/30">
+                  <p className="text-[11px] text-blue-300 font-medium">
+                    After submitting, you will receive LXchange bank details to complete your payment. Your crypto will be delivered once payment is confirmed.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SELL GIFT CARD ─── */}
+            {isGiftcard && isSell && (
               <div className="space-y-4 text-xs">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -320,9 +451,82 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
               </div>
             )}
 
+            {/* ─── BUY GIFT CARD ─── */}
+            {isGiftcard && isBuy && (
+              <div className="space-y-4 text-xs">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] font-bold tracking-wider text-blue-300 uppercase block mb-1">
+                      CARD BRAND *
+                    </label>
+                    <select
+                      value={cardBrand}
+                      onChange={(e) => setCardBrand(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#090a14] border border-slate-800 text-xs font-bold text-white focus:outline-none focus:border-purple-500 cursor-pointer"
+                    >
+                      <option value="iTunes">Apple / iTunes</option>
+                      <option value="Steam">Steam Wallet</option>
+                      <option value="Amazon">Amazon Gift Card</option>
+                      <option value="Sephora">Sephora</option>
+                      <option value="Google Play">Google Play</option>
+                      <option value="eBay">eBay</option>
+                      <option value="Razer Gold">Razer Gold</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold tracking-wider text-blue-300 uppercase block mb-1">
+                      DENOMINATION (USD $) *
+                    </label>
+                    <input
+                      type="number"
+                      step="any"
+                      required
+                      value={cardDenomination}
+                      onChange={(e) => setCardDenomination(e.target.value)}
+                      placeholder="e.g. 20"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#090a14] border border-slate-800 text-xs font-mono font-bold text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold tracking-wider text-blue-300 uppercase block mb-1">
+                    QUANTITY *
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={cardQuantity}
+                    onChange={(e) => setCardQuantity(e.target.value)}
+                    placeholder="e.g. 5"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#090a14] border border-slate-800 text-xs font-mono font-bold text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+
+                {parsedDenomination > 0 && parsedQuantity > 0 && (
+                  <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-between">
+                    <span className="text-[11px] text-blue-300 font-medium">Total Value</span>
+                    <span className="text-sm font-extrabold font-mono text-blue-300">
+                      ${totalGiftCardUsd.toLocaleString()} ({parsedQuantity} × ${parsedDenomination})
+                    </span>
+                  </div>
+                )}
+
+                <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/30">
+                  <p className="text-[11px] text-blue-300 font-medium">
+                    After submitting, you will receive LXchange bank details to complete your payment. Your gift card code will be delivered once payment is confirmed.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Est Payout Box */}
             <div className="p-4 rounded-xl bg-[#090a14] border border-slate-800/80 flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400">Est. Naira Payout:</span>
+              <span className="text-xs font-semibold text-slate-400">
+                {tradeDirection === 'sell' ? 'Est. Naira Payout:' : 'Est. Naira Cost:'}
+              </span>
               <span className="text-lg font-extrabold font-mono text-purple-300">
                 {estimatedPayoutFormatted}
               </span>
@@ -332,17 +536,19 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
               type="submit"
               className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-fuchsia-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-purple-900/40 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98]"
             >
-              <span>Next: Payout Bank Account →</span>
+              <span>{tradeDirection === 'sell' ? 'Next: Payout Bank Account →' : 'Next: Payment Details →'}</span>
             </button>
           </form>
         )}
 
-        {/* STEP 2: CUSTOMER CONTACT & PAYOUT BANK DETAILS */}
+        {/* ═══════════════════════════════════════════════════════ */}
+        {/* STEP 2: CONTACT + BANK / PAYMENT                       */}
+        {/* ═══════════════════════════════════════════════════════ */}
         {step === 2 && (
           <form onSubmit={handleStep2Submit} className="space-y-5 text-xs">
             <div>
               <h2 className="font-heading text-2xl font-bold text-white tracking-tight">
-                Payout Bank Details
+                {isSell ? 'Payout Bank Details' : 'Complete Your Payment'}
               </h2>
               <p className="text-xs text-purple-300 font-medium mt-1">
                 {tradeSummaryString}
@@ -405,65 +611,138 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
               </div>
             </div>
 
-            {/* Destination NGN Bank Account */}
-            <div className="space-y-3 p-4 rounded-xl bg-[#090a14] border border-slate-800">
-              <div className="text-[11px] font-bold text-emerald-400 font-mono uppercase tracking-wider flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5" />
-                2. NIGERIAN BANK PAYOUT ACCOUNT
-              </div>
-
-              <div>
-                <label className="text-[11px] text-slate-300 font-semibold block mb-1">SELECT BANK NAME *</label>
-                <select
-                  value={bankName}
-                  onChange={(e) => setBankName(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#14172e] border border-slate-700 text-xs font-semibold text-white focus:outline-none focus:border-purple-500 cursor-pointer"
-                >
-                  <option value="UBA (United Bank for Africa)">UBA (United Bank for Africa)</option>
-                  <option value="Kuda Microfinance Bank">Kuda Microfinance Bank</option>
-                  <option value="GTBank (Guaranty Trust Bank)">GTBank (Guaranty Trust Bank)</option>
-                  <option value="Zenith Bank">Zenith Bank</option>
-                  <option value="Access Bank">Access Bank</option>
-                  <option value="First Bank of Nigeria">First Bank of Nigeria</option>
-                  <option value="OPay Digital Bank">OPay Digital Bank</option>
-                  <option value="Moniepoint Microfinance Bank">Moniepoint Microfinance Bank</option>
-                  <option value="PalmPay">PalmPay</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[11px] text-slate-300 font-semibold block mb-1">ACCOUNT NUMBER (10 DIGITS) *</label>
-                  <input
-                    type="text"
-                    required
-                    maxLength={10}
-                    value={accountNumber}
-                    onChange={(e) => setAccountNumber(e.target.value)}
-                    placeholder="2049102940"
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#14172e] border border-slate-700 font-mono text-xs text-emerald-400 font-bold placeholder-slate-600 focus:outline-none focus:border-purple-500"
-                  />
+            {/* ─── SELL: User's bank account for payout ─── */}
+            {isSell && (
+              <div className="space-y-3 p-4 rounded-xl bg-[#090a14] border border-slate-800">
+                <div className="text-[11px] font-bold text-emerald-400 font-mono uppercase tracking-wider flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5" />
+                  2. YOUR BANK ACCOUNT (FOR PAYOUT)
                 </div>
 
                 <div>
-                  <label className="text-[11px] text-slate-300 font-semibold block mb-1">BENEFICIARY NAME *</label>
-                  <input
-                    type="text"
-                    required
-                    value={accountName}
-                    onChange={(e) => setAccountName(e.target.value)}
-                    placeholder="Account Name"
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#14172e] border border-slate-700 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
-                  />
+                  <label className="text-[11px] text-slate-300 font-semibold block mb-1">SELECT BANK NAME *</label>
+                  <select
+                    value={bankName}
+                    onChange={(e) => setBankName(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl bg-[#14172e] border border-slate-700 text-xs font-semibold text-white focus:outline-none focus:border-purple-500 cursor-pointer"
+                  >
+                    <option value="UBA (United Bank for Africa)">UBA (United Bank for Africa)</option>
+                    <option value="Kuda Microfinance Bank">Kuda Microfinance Bank</option>
+                    <option value="GTBank (Guaranty Trust Bank)">GTBank (Guaranty Trust Bank)</option>
+                    <option value="Zenith Bank">Zenith Bank</option>
+                    <option value="Access Bank">Access Bank</option>
+                    <option value="First Bank of Nigeria">First Bank of Nigeria</option>
+                    <option value="OPay Digital Bank">OPay Digital Bank</option>
+                    <option value="Moniepoint Microfinance Bank">Moniepoint Microfinance Bank</option>
+                    <option value="PalmPay">PalmPay</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] text-slate-300 font-semibold block mb-1">ACCOUNT NUMBER (10 DIGITS) *</label>
+                    <input
+                      type="text"
+                      required
+                      maxLength={10}
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value)}
+                      placeholder="2049102940"
+                      className="w-full px-3 py-2.5 rounded-xl bg-[#14172e] border border-slate-700 font-mono text-xs text-emerald-400 font-bold placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] text-slate-300 font-semibold block mb-1">BENEFICIARY NAME *</label>
+                    <input
+                      type="text"
+                      required
+                      value={accountName}
+                      onChange={(e) => setAccountName(e.target.value)}
+                      placeholder="Account Name"
+                      className="w-full px-3 py-2.5 rounded-xl bg-[#14172e] border border-slate-700 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* ─── BUY: LXchange bank details + proof upload ─── */}
+            {isBuy && (
+              <div className="space-y-4">
+                {/* LXchange Bank Details */}
+                <div className="space-y-3 p-4 rounded-xl bg-[#090a14] border border-slate-800">
+                  <div className="text-[11px] font-bold text-blue-400 font-mono uppercase tracking-wider flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5" />
+                    2. TRANSFER TO LXCHANGE
+                  </div>
+
+                  <p className="text-[11px] text-slate-400">
+                    Transfer exactly <span className="font-bold text-white">{estimatedPayoutFormatted}</span> to the account below:
+                  </p>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#14172e] border border-slate-700">
+                      <div>
+                        <div className="text-[10px] text-slate-500 font-mono uppercase">Bank</div>
+                        <div className="text-xs font-bold text-white">{lxchangeBank.bank}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#14172e] border border-slate-700">
+                      <div>
+                        <div className="text-[10px] text-slate-500 font-mono uppercase">Account Number</div>
+                        <div className="text-xs font-bold text-white font-mono">{lxchangeBank.accountNumber}</div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard(lxchangeBank.accountNumber)}
+                        className="p-1.5 rounded-lg hover:bg-slate-700 transition-colors cursor-pointer"
+                      >
+                        {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
+                      </button>
+                    </div>
+
+                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#14172e] border border-slate-700">
+                      <div>
+                        <div className="text-[10px] text-slate-500 font-mono uppercase">Account Name</div>
+                        <div className="text-xs font-bold text-white">{lxchangeBank.accountName}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Proof of Payment Upload */}
+                <div className="space-y-2 p-4 rounded-xl bg-[#090a14] border border-slate-800">
+                  <div className="text-[11px] font-bold text-blue-400 font-mono uppercase tracking-wider flex items-center gap-1.5">
+                    <Upload className="w-3.5 h-3.5" />
+                    3. PROOF OF PAYMENT *
+                  </div>
+
+                  <p className="text-[11px] text-slate-400">
+                    Upload your bank transfer receipt or screenshot after making payment.
+                  </p>
+
+                  <label className="flex items-center justify-center gap-2 p-3 rounded-xl bg-[#14172e] border border-dashed border-slate-600 hover:border-blue-500 text-slate-300 text-xs font-semibold cursor-pointer transition-all">
+                    <Upload className="w-4 h-4 text-blue-400" />
+                    <span className="truncate">{proofFileName || 'Upload Payment Receipt'}</span>
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      required
+                      onChange={(e) => setProofFileName(e.target.files?.[0]?.name || 'Proof Uploaded')}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
 
             <button
               type="submit"
               className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-fuchsia-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-purple-900/40 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98]"
             >
-              <span>Submit Trade Request</span>
+              <span>{isSell ? 'Submit Trade Request' : 'Submit Purchase Request'}</span>
             </button>
 
             <div className="text-center">
@@ -479,7 +758,9 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
           </form>
         )}
 
-        {/* STEP 3: REQUEST RECEIVED */}
+        {/* ═══════════════════════════════════════════════════════ */}
+        {/* STEP 3: CONFIRMATION                                   */}
+        {/* ═══════════════════════════════════════════════════════ */}
         {step === 3 && (
           <div className="text-center py-4 space-y-5">
             <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-950/40">
@@ -488,7 +769,7 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
 
             <div className="space-y-2">
               <h2 className="font-heading text-2xl font-bold text-white tracking-tight">
-                Request Submitted
+                {isSell ? 'Trade Request Submitted' : 'Purchase Request Submitted'}
               </h2>
 
               <div>
@@ -502,9 +783,15 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
               <p>
                 Confirmation sent to <span className="font-bold text-white">{email || 'your email'}</span>.
               </p>
-              <p className="text-slate-400">
-                Your request is live on the Admin Trade Desk. Click below to chat live with a trader and track your payout.
-              </p>
+              {isSell ? (
+                <p className="text-slate-400">
+                  Your request is live on the Admin Trade Desk. Click below to chat live with a trader and track your payout.
+                </p>
+              ) : (
+                <p className="text-slate-400">
+                  Your payment is being verified. Click below to chat live with a trader and get updates on your order.
+                </p>
+              )}
             </div>
 
             <button
